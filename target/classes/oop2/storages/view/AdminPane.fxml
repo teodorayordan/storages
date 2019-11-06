@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="496.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="oop2.storages.view.AdminController">
+   <children>
+      <TabPane prefHeight="323.0" prefWidth="496.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Create Owner">
+          	<content>
+          		<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+					<children>
+						<TextField fx:id="ownerAccountName" layoutX="156.0" layoutY="14.0" />
+						<PasswordField fx:id="ownerAccountPassword" layoutX="156.0" layoutY="54.0" />
+						<TextField fx:id="ownerName" layoutX="156.0" layoutY="97.0" />
+						<TextField fx:id="ownerPin" layoutX="156.0" layoutY="147.0" />
+						<Label layoutX="14.0" layoutY="18.0" text="Account Name:" />
+						<Label layoutX="14.0" layoutY="58.0" text="Аccount Password:" />
+						<Label layoutX="14.0" layoutY="101.0" text="Owner Name:" />
+						<Label layoutX="14.0" layoutY="151.0" text="Owner PIN:" />
+						<Button layoutX="373.0" layoutY="255.0" mnemonicParsing="false" onAction="#createOwner" prefHeight="12.0" prefWidth="109.0" text="Create Owner" />
+					</children>
+</AnchorPane>
+          	</content>
+          </Tab>
+          
+          
+          <Tab text="Create Agent">
+            <content>
+			  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="agentAccountName" layoutX="156.0" layoutY="14.0" />
+                        <PasswordField fx:id="agentAccountPassword" layoutX="156.0" layoutY="54.0" />
+                        <TextField fx:id="agentName" layoutX="156.0" layoutY="97.0" />
+                        <TextField fx:id="agentPin" layoutX="156.0" layoutY="147.0" />
+                        <Label layoutX="14.0" layoutY="18.0" text="Account Name:" />
+                        <Label layoutX="14.0" layoutY="58.0" text="Аccount Password:" />
+                        <Label layoutX="14.0" layoutY="101.0" text="Agent Name:" />
+                        <Label layoutX="14.0" layoutY="151.0" text="Agent PIN:" />
+                        <Button layoutX="373.0" layoutY="255.0" mnemonicParsing="false" onAction="#createAgent" prefHeight="12.0" prefWidth="109.0" text="Create Agent" />
+                        <TextField fx:id="agentCommission" layoutX="156.0" layoutY="192.0" />
+                        <Label layoutX="14.0" layoutY="196.0" text="Agent Commission:" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+           <Tab text="Create Storage Category">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView layoutX="282.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" />
+                        <TextField fx:id="categoryText" layoutX="120.0" layoutY="14.0" />
+                        <Label layoutX="14.0" layoutY="18.0" text="Storage Category:" />
+                        <Button layoutX="373.0" layoutY="255.0" mnemonicParsing="false" onAction="#addCategory" prefHeight="12.0" prefWidth="109.0" text="Add Category" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+           <Tab text="Create Storage Type">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView layoutX="282.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" />
+                        <TextField fx:id="typeText" layoutX="120.0" layoutY="14.0" />
+                        <Label layoutX="14.0" layoutY="18.0" text="Storage Type:" />
+                        <Button layoutX="373.0" layoutY="255.0" mnemonicParsing="false" onAction="#addType" prefHeight="12.0" prefWidth="109.0" text="Add Type" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
