@@ -47,11 +47,10 @@ public class Agent implements Serializable {
 		super();
 	}
 
-	public Agent(User user, Double commission, Double rating) {
+	public Agent(User user, Double commission) {
 		super();
 		this.user = user;
 		this.commission = commission;
-		this.rating = rating;
 	}
 
 }

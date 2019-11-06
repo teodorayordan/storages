@@ -3,16 +3,11 @@ package oop2.storages.view;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
+import oop2.storages.Agent;
 import oop2.storages.Owner;
 import oop2.storages.User;
 
@@ -151,7 +146,8 @@ public class AdminController {
 					// save the student object
 					System.out.println("Saving the user...");
 					session.save(tempUser);
-					//Agent tempAgent = newAtemp
+					Agent tempAgent = new Agent(tempUser, Double.parseDouble(agentCommission.getText()));
+					session.save(tempAgent);
 				} else {
 					if (checkUser.getAccountName().equals(account))
 						System.out.println("Account name Duplicate");
