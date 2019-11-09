@@ -1,5 +1,6 @@
 package oop2.storages;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -29,10 +30,10 @@ public class Contract {
 	private Storage storage;
 
 	@Column(name = "contract_start_date")
-	private Date startDate;
+	private LocalDate startDate;
 
 	@Column(name = "contract_end_date")
-	private Date endDate;
+	private LocalDate endDate;
 
 	@Column(name = "price")
 	private Double price = null;
@@ -47,12 +48,12 @@ public class Contract {
 		super();
 	}
 
-	public Contract(Agent agent, Storage storage, Date startDate, Date endDate, Double price, String renterName,
+	public Contract(Agent agent, Storage storage, Date startDate, LocalDate endDate, Double price, String renterName,
 			String renterPin) {
 		super();
 		this.agent = agent;
 		this.storage = storage;
-		this.startDate = startDate;
+		this.startDate = LocalDate.now();
 		this.endDate = endDate;
 		this.price = price;
 		this.renterName = renterName;

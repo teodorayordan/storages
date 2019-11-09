@@ -8,70 +8,129 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="496.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="oop2.storages.view.AdminController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="oop2.storages.view.AdminController">
    <children>
-      <TabPane prefHeight="323.0" prefWidth="496.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Create Owner">
-          	<content>
-          		<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-					<children>
-						<TextField fx:id="ownerAccountName" layoutX="156.0" layoutY="14.0" />
-						<PasswordField fx:id="ownerAccountPassword" layoutX="156.0" layoutY="54.0" />
-						<TextField fx:id="ownerName" layoutX="156.0" layoutY="97.0" />
-						<TextField fx:id="ownerPin" layoutX="156.0" layoutY="147.0" />
-						<Label layoutX="14.0" layoutY="18.0" text="Account Name:" />
-						<Label layoutX="14.0" layoutY="58.0" text="Аccount Password:" />
-						<Label layoutX="14.0" layoutY="101.0" text="Owner Name:" />
-						<Label layoutX="14.0" layoutY="151.0" text="Owner PIN:" />
-						<Button layoutX="373.0" layoutY="255.0" mnemonicParsing="false" onAction="#createOwner" prefHeight="12.0" prefWidth="109.0" text="Create Owner" />
-					</children>
-</AnchorPane>
-          	</content>
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="389.0" prefWidth="600.0">
+                     <children>
+                        <GridPane layoutX="92.0" layoutY="21.0" prefHeight="329.0" prefWidth="417.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Button fx:id="crOwnBtn" mnemonicParsing="false" onAction="#createOwner" text="Create Owner" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Label text="Owner PIN" GridPane.rowIndex="3" />
+                              <Label text="Account Password" GridPane.rowIndex="1" />
+                              <Label text="Owner Name" GridPane.rowIndex="2" />
+                              <Label text="Account Name" />
+                              <TextField fx:id="ownerAccountName" onKeyPressed="#keyPressed" GridPane.columnIndex="1" />
+                              <PasswordField fx:id="ownerAccountPassword" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <TextField fx:id="ownerName" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="ownerPin" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                           </children>
+                        </GridPane>
+                     </children>
+                  </AnchorPane>
+            </content>
           </Tab>
-          
-          
           <Tab text="Create Agent">
             <content>
-			  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="389.0" prefWidth="600.0">
                      <children>
-                        <TextField fx:id="agentAccountName" layoutX="156.0" layoutY="14.0" />
-                        <PasswordField fx:id="agentAccountPassword" layoutX="156.0" layoutY="54.0" />
-                        <TextField fx:id="agentName" layoutX="156.0" layoutY="97.0" />
-                        <TextField fx:id="agentPin" layoutX="156.0" layoutY="147.0" />
-                        <Label layoutX="14.0" layoutY="18.0" text="Account Name:" />
-                        <Label layoutX="14.0" layoutY="58.0" text="Аccount Password:" />
-                        <Label layoutX="14.0" layoutY="101.0" text="Agent Name:" />
-                        <Label layoutX="14.0" layoutY="151.0" text="Agent PIN:" />
-                        <Button layoutX="373.0" layoutY="255.0" mnemonicParsing="false" onAction="#createAgent" prefHeight="12.0" prefWidth="109.0" text="Create Agent" />
-                        <TextField fx:id="agentCommission" layoutX="156.0" layoutY="192.0" />
-                        <Label layoutX="14.0" layoutY="196.0" text="Agent Commission:" />
-                     </children></AnchorPane>
+                        <GridPane layoutX="97.0" layoutY="25.0" prefHeight="322.0" prefWidth="406.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Account Name" />
+                              <TextField fx:id="agentAccountName" onKeyPressed="#keyPressed" GridPane.columnIndex="1" />
+                              <Label text="Account Password" GridPane.rowIndex="1" />
+                              <PasswordField fx:id="agentAccountPassword" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label text="Agent Name" GridPane.rowIndex="2" />
+                              <TextField fx:id="agentName" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label text="Agent PIN" GridPane.rowIndex="3" />
+                              <TextField fx:id="agentPin" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                               <Label text="Agent commission" GridPane.rowIndex="4" />
+                              <TextField fx:id="agentCommission" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Button fx:id="crAgBtn" mnemonicParsing="false" onAction="#createAgent" text="Create Agent" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                           </children>
+                        </GridPane>
+                     </children>
+                  </AnchorPane>
             </content>
           </Tab>
-           <Tab text="Create Storage Category">
-            <content>
+            <Tab text="Create Storage Category">
+              <content>
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <GridPane layoutX="81.0" layoutY="27.0" prefHeight="317.0" prefWidth="439.0">
+                          <columnConstraints>
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="224.0" minHeight="10.0" prefHeight="216.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="44.0" minHeight="10.0" prefHeight="41.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Storage Category" />
+                              <TextField fx:id="storageCategory" GridPane.columnIndex="1" />
+                              <Button fx:id="crStCategoryBtn" mnemonicParsing="false" onAction="#addCategory" prefHeight="12.0" prefWidth="109.0" text="Add Category" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <ListView fx:id="stCategories" prefHeight="210.0" prefWidth="220.0" GridPane.rowIndex="1" />
+                           </children>
+                        </GridPane>
+                     </children></AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Create Storage Type">
+              <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ListView layoutX="282.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" />
-                        <TextField fx:id="categoryText" layoutX="120.0" layoutY="14.0" />
-                        <Label layoutX="14.0" layoutY="18.0" text="Storage Category:" />
-                        <Button layoutX="373.0" layoutY="255.0" mnemonicParsing="false" onAction="#addCategory" prefHeight="12.0" prefWidth="109.0" text="Add Category" />
+                        <GridPane layoutX="81.0" layoutY="27.0" prefHeight="317.0" prefWidth="439.0">
+                          <columnConstraints>
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="224.0" minHeight="10.0" prefHeight="216.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="44.0" minHeight="10.0" prefHeight="41.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Storage Type" />
+                              <TextField fx:id="storageType" GridPane.columnIndex="1" />
+                              <Button fx:id="crStTypeBtn" mnemonicParsing="false" onAction="#addType" prefHeight="12.0" prefWidth="109.0" text="Add Type" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <ListView fx:id="stTypes" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                           </children>
+                        </GridPane>
                      </children></AnchorPane>
             </content>
-          </Tab>
-           <Tab text="Create Storage Type">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView layoutX="282.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" />
-                        <TextField fx:id="typeText" layoutX="120.0" layoutY="14.0" />
-                        <Label layoutX="14.0" layoutY="18.0" text="Storage Type:" />
-                        <Button layoutX="373.0" layoutY="255.0" mnemonicParsing="false" onAction="#addType" prefHeight="12.0" prefWidth="109.0" text="Add Type" />
-                     </children></AnchorPane>
-            </content>
-          </Tab>
+            </Tab>
         </tabs>
       </TabPane>
    </children>

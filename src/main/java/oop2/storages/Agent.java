@@ -44,13 +44,56 @@ public class Agent implements Serializable {
 	}
 
 	public Agent() {
-		super();
+		setRating();
 	}
 
 	public Agent(User user, Double commission) {
 		super();
 		this.user = user;
 		this.commission = commission;
+		setRating();
 	}
+
+	public Integer getAgentID() {
+		return agentID;
+	}
+
+	public void setAgentID(Integer agentID) {
+		this.agentID = agentID;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Double getCommission() {
+		return commission;
+	}
+
+	public void setCommission(Double commission) {
+		this.commission = commission;
+	}
+
+	public Double getRating() {
+		return rating;
+	}
+
+	public void setRating() {
+		this.rating = 5.0;
+	}
+
+	public List<Storage> getStorageList() {
+		return storageList;
+	}
+
+	public void setStorageList(List<Storage> storageList) {
+		this.storageList = storageList;
+	}
+	
+	
 
 }

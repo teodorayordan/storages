@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="oop2.storages.view.AgentController">
+   <children>
+      <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Profile Info">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <GridPane alignment="CENTER" layoutX="134.0" layoutY="66.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="239.0" prefWidth="333.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Account Name" />
+                              <Label fx:id="accountNameText" text="Label" GridPane.columnIndex="1" />
+                              <Label text="Name" GridPane.rowIndex="1" />
+                              <Label fx:id="nameText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Button fx:id="editPrBtn" alignment="CENTER" mnemonicParsing="false" onAction="#editProfile" text="Edit Profile" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                              <Label text="Commission" GridPane.rowIndex="2" />
+                              <Label text="Rating" GridPane.rowIndex="3" />
+                              <Label fx:id="commissionText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label fx:id="ratingText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                           </children>
+                        </GridPane>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Create Contract">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <GridPane alignment="CENTER" layoutX="109.0" prefHeight="295.0" prefWidth="396.0" AnchorPane.bottomAnchor="43.0" AnchorPane.leftAnchor="109.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="199.0" minWidth="10.0" prefWidth="199.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="198.0" minWidth="10.0" prefWidth="197.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                              <RowConstraints maxHeight="137.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="137.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="137.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="137.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="137.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="137.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="137.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <ComboBox fx:id="storageCombo" prefHeight="25.0" prefWidth="201.0" GridPane.columnIndex="1" />
+                              <Label alignment="CENTER" text="Choose Storage" />
+                              <TextField fx:id="renterName" onKeyPressed="#keyPressed" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label text="Renter Name" GridPane.rowIndex="1" />
+                              <TextField fx:id="renterPin" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label text="Renter PIN" GridPane.rowIndex="2" />
+                              <Label alignment="CENTER" text="Contract End Date" GridPane.rowIndex="3" />
+                              <DatePicker fx:id="dateContract" prefHeight="25.0" prefWidth="201.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label text="Price per Month" GridPane.rowIndex="4" />
+                              <TextField fx:id="priceContract" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Button fx:id="crContractBtn" mnemonicParsing="false" onAction="#createContract" text="Create Contract" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
+                              <Label text="Full Price" GridPane.rowIndex="5" />
+                              <TextField fx:id="fullPrice" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                           </children>
+                        </GridPane>
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Maintained Storages">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                          <GridPane layoutX="64.0" layoutY="33.0" prefHeight="305.0" prefWidth="473.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="240.0" minWidth="10.0" prefWidth="240.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="254.0" minWidth="10.0" prefWidth="233.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints maxHeight="293.0" minHeight="10.0" prefHeight="227.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <ListView fx:id="maintainedSt" prefHeight="230.0" prefWidth="273.0" />
+                              <Button fx:id="showStBtn" mnemonicParsing="false" onAction="#showStorage" text="Show Storage" GridPane.columnIndex="1" />
+                           </children>
+                        </GridPane>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

@@ -1,17 +1,55 @@
 package oop2.storages.view;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import oop2.storages.Agent;
+import oop2.storages.Category;
 import oop2.storages.Owner;
+import oop2.storages.StorageType;
 import oop2.storages.User;
 
-public class AdminController {
+public class AdminController implements Initializable {
+
+	// create session factory
+	SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
+			.buildSessionFactory();
+
+	// create session
+	Session session = factory.getCurrentSession();
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		List<StorageType> types = new ArrayList<>();
+		List<Category> categories = new ArrayList<>();
+
+		// start a transaction
+		session.beginTransaction();
+
+		types = session.createQuery("from StorageType s").list();
+
+		categories = session.createQuery("from Category s").list();
+
+		stTypes.getItems().clear();
+		stTypes.getItems().addAll(types);
+		stCategories.getItems().clear();
+		stCategories.getItems().addAll(categories);
+
+	}
 
 	//
 	// Create Owner Elements
@@ -28,6 +66,9 @@ public class AdminController {
 	@FXML
 	TextField ownerPin;
 
+	@FXML
+	Button crOwnBtn;
+
 	// @FXML
 	// Button createOwner;
 
@@ -40,13 +81,6 @@ public class AdminController {
 
 		if (!account.isEmpty() && !password.isEmpty() && !name.isEmpty() && !pin.isEmpty()) {
 			System.out.println(account + password + name + pin);
-
-			// create session factory
-			SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
-					.buildSessionFactory();
-
-			// create session
-			Session session = factory.getCurrentSession();
 
 			try {
 				// create a student object
@@ -111,6 +145,9 @@ public class AdminController {
 	TextField agentCommission;
 
 	@FXML
+	Button crAgBtn;
+
+	@FXML
 	public void createAgent(ActionEvent event) {
 		String account = agentAccountName.getText();
 		String password = agentAccountPassword.getText();
@@ -121,12 +158,13 @@ public class AdminController {
 		if (!account.isEmpty() && !password.isEmpty() && !name.isEmpty() && !pin.isEmpty() && !commission.isEmpty()) {
 			System.out.println(account + password + name + pin);
 
-			// create session factory
-			SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
-					.buildSessionFactory();
-
-			// create session
-			Session session = factory.getCurrentSession();
+			/*
+			 * // create session factory SessionFactory factory = new
+			 * Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
+			 * .buildSessionFactory();
+			 * 
+			 * // create session Session session = factory.getCurrentSession();
+			 */
 
 			try {
 				// create a student object
@@ -174,48 +212,56 @@ public class AdminController {
 	// Category Elements
 	//
 	@FXML
-	TextField categoryText;
+	TextField storageCategory;
+
+	@FXML
+	ListView<Category> stCategories;
+
+	@FXML
+	Button crStCategoryBtn;
 
 	@FXML
 	public void addCategory(ActionEvent event) {
-		String category = categoryText.getText();
-		System.out.println(category);
+		String category = storageCategory.getText();
+		Category tempCategory = new Category(category);
+		session.save(tempCategory);
+		// commit transaction
+		session.getTransaction().commit();
+
 	}
 
 	//
 	// Type Elements
 	//
 	@FXML
-	TextField typeText;
+	TextField storageType;
+
+	@FXML
+	ListView<StorageType> stTypes;
+
+	@FXML
+	Button crStTypeBtn;
 
 	@FXML
 	public void addType(ActionEvent event) {
-		String type = typeText.getText();
-		System.out.println(type);
+		String type = storageType.getText();
+		StorageType tempType = new StorageType(type);
+		session.save(tempType);
+		// commit transaction
+		session.getTransaction().commit();
+
 	}
 
-	// @FXML
-	// Button agentButton;
+	public void keyPressed(KeyEvent event) {
 
-	/*
-	 * @FXML public void ownerButton(ActionEvent event) { try {
-	 * 
-	 * Parent root = FXMLLoader.load(getClass().getResource("CreateOwner.fxml"));
-	 * Stage stage = new Stage(); stage.setScene(new Scene(root)); stage.show();
-	 * ownerButton.getScene().getWindow().hide();
-	 * 
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); }
-	 * 
-	 * }
-	 * 
-	 * @FXML public void agentButton(ActionEvent event) { try {
-	 * 
-	 * Parent root = FXMLLoader.load(getClass().getResource("CreateAgent.fxml"));
-	 * Stage stage = new Stage(); stage.setScene(new Scene(root)); stage.show();
-	 * agentButton.getScene().getWindow().hide();
-	 * 
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); } }
-	 */
+		Control[] focusOrder = new Control[] { ownerAccountName, ownerAccountPassword, ownerName, ownerPin, crOwnBtn,
+				agentAccountName, agentAccountPassword, agentName, agentPin, agentCommission, crAgBtn };
+
+		for (int i = 0; i < focusOrder.length - 1; i++) {
+			Control nextControl = focusOrder[i + 1];
+			focusOrder[i].addEventHandler(ActionEvent.ACTION, e -> nextControl.requestFocus());
+		}
+
+	}
+
 }

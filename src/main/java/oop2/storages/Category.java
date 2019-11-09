@@ -32,4 +32,14 @@ public class Category {
 	public Category() {
 		super();
 	}
+
+	public String getCategoryName() {
+		return categoryName;
+	}
+
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
+	
+	
 }

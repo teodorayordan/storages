@@ -1,14 +1,11 @@
 package oop2.storages.view;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item;
-import org.hibernate.cfg.Configuration;
-
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,9 +17,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import oop2.storages.Agent;
+import oop2.storages.HibernateUtility;
 import oop2.storages.Owner;
-import oop2.storages.Storage;
 import oop2.storages.User;
 
 public class Controller implements Initializable {
@@ -52,23 +50,26 @@ public class Controller implements Initializable {
 	@FXML
 	public void login(ActionEvent event) {
 		// create session factory
-		SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
-				.addAnnotatedClass(Owner.class).addAnnotatedClass(Agent.class).addAnnotatedClass(Storage.class)
-				.buildSessionFactory();
+		SessionFactory factory = HibernateUtility.getSessionFactory();
 
 		// create session
 		Session session = factory.getCurrentSession();
 
 		if (accountNameField.getText().equals("admin") && passwordField.getText().equals("admin"))
 			try {
-
-				Parent root = FXMLLoader.load(getClass().getResource("AdminPane.fxml"));
+				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("AdminPane.fxml"));
+				Parent root1 = (Parent) fxmlLoader.load();
 				Stage stage = new Stage();
-				stage.setScene(new Scene(root));
+				stage.setScene(new Scene(root1));
 				stage.show();
 
 				// hide login pane
 				loginButton.getScene().getWindow().hide();
+
+				stage.setOnCloseRequest((WindowEvent event1) -> {
+					factory.close();
+					Platform.exit();
+				});
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -76,49 +77,78 @@ public class Controller implements Initializable {
 		else {
 			String accountName = accountNameField.getText();
 			String accountPassword = passwordField.getText();
-			try {
 
-				// start a transaction
-				session.beginTransaction();
+			// start a transaction
+			session.beginTransaction();
 
-				User loginResult = (User) session.createQuery("from User s where s.accountName='" + accountName
-						+ "' and s.accountPassword='" + accountPassword + "'").uniqueResult();
+			User loginResult = (User) session.createQuery("from User s where s.accountName='" + accountName
+					+ "' and s.accountPassword='" + accountPassword + "'").uniqueResult();
 
-				// commit transaction
-				// session.getTransaction().commit();
+			if (loginResult == null) {
+				System.out.println("No account");
+				label.setVisible(true);
+			} else {
+				Singleton.getInstance().setUser(loginResult);
+				System.out.println("There is a account");
+				
+				// Proverka koe ot dvete e, ednoto shte e null
+				Owner owner = session.get(Owner.class, loginResult.getUserID());
+				Agent agent = session.get(Agent.class, loginResult.getUserID());
 
-				System.out.println("Done!");
+				if (owner != null) {
+					System.out.println("Its an owner");
+					System.out.println(owner);
+					Singleton.getInstance().setOwner(owner);
+					try {
 
-				if (loginResult == null) {
-					System.out.println("No account");
-					label.setVisible(true);
-				} else {
-					System.out.println("There is a account");
+						Parent root = FXMLLoader.load(getClass().getResource("OwnerPane.fxml"));
+						Stage stage = new Stage();
+						stage.setScene(new Scene(root));
+						stage.show();
+						// hide login pane
+						loginButton.getScene().getWindow().hide();
 
-					// Proverka koe ot dvete e, ednoto shte e null
-					Owner owner = session.get(Owner.class, loginResult.getUserID());
-					Agent agent = session.get(Agent.class, loginResult.getUserID());
+						stage.setOnCloseRequest((WindowEvent event1) -> {
+							factory.close();
+							Platform.exit();
+						});
 
-					if (owner != null) {
-						System.out.println("Its an owner");
-						System.out.println(owner);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-
-					else if (agent != null) {
-						System.out.println("Its an agent");
-						System.out.println(agent);
-					}
-
-					else {
-						System.out.println("Contact an admin for help");
-					}
-
-					// commit transaction
-					session.getTransaction().commit();
 				}
 
-			} finally {
-				factory.close();
+				else if (agent != null) {
+					System.out.println("Its an agent");
+					System.out.println(agent);
+					Singleton.getInstance().setAgent(agent);
+
+					try {
+
+						Parent root = FXMLLoader.load(getClass().getResource("AgentPane.fxml"));
+						Stage stage = new Stage();
+						stage.setScene(new Scene(root));
+						stage.show();
+
+						// hide login pane
+						loginButton.getScene().getWindow().hide();
+
+						stage.setOnCloseRequest((WindowEvent event1) -> {
+							factory.close();
+							Platform.exit();
+						});
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+				else {
+					System.out.println("Contact an admin for help");
+				}
+
+				// commit transaction
+				session.getTransaction().commit();
 			}
 
 		}
