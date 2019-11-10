@@ -59,10 +59,13 @@ public class EditProfileController implements Initializable {
 
 		// save the student object
 		if (newCommission.isVisible()) {
-			Agent agent = new Agent(user, Double.parseDouble(newCommission.getText()));
+		//	Agent agent = new Agent(user, Double.parseDouble(newCommission.getText()));
+			Agent agent = Singleton.getInstance().getAgent();
+			agent.setCommission(Double.parseDouble(newCommission.getText()));
 			//
 			//Ne raboti
 			//
+			session.update(user);
 			System.out.println(agent);
 			session.update(agent);
 		} else

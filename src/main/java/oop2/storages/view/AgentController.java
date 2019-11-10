@@ -3,15 +3,12 @@ package oop2.storages.view;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Single;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -123,7 +120,11 @@ public class AgentController implements Initializable {
 
 		Contract contract = new Contract(Singleton.getInstance().getAgent(), choosenStorage, null, endDate,
 				pricePerMonth, renterNme, renterPn);
-		// System.out.println(contract);
+		Storage tempStorage = choosenStorage;
+		tempStorage.setStorageStatus(true);
+		System.out.println(tempStorage);
+		session.update(tempStorage);
+
 		session.save(contract);
 		session.getTransaction().commit();
 	}
@@ -144,6 +145,8 @@ public class AgentController implements Initializable {
 
 	public void showStorage(ActionEvent event) {
 		try {
+			Singleton.getInstance().setStorage(maintainedSt.getSelectionModel().getSelectedItem());
+			
 			Parent root = FXMLLoader.load(getClass().getResource("ShowStorage.fxml"));
 			Stage stage = new Stage();
 			stage.setScene(new Scene(root));

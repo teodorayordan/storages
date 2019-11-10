@@ -148,9 +148,9 @@ public class Controller implements Initializable {
 				}
 
 				// commit transaction
-				session.getTransaction().commit();
+				
 			}
-
+			session.getTransaction().commit();
 		}
 	}
 

@@ -74,6 +74,7 @@ public class Agent implements Serializable {
 		return commission;
 	}
 
+	
 	public void setCommission(Double commission) {
 		this.commission = commission;
 	}
