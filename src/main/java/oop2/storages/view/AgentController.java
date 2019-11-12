@@ -27,39 +27,37 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import oop2.storages.Agent;
 import oop2.storages.Contract;
+import oop2.storages.HibernateUtility;
 import oop2.storages.Owner;
 import oop2.storages.Storage;
 import oop2.storages.User;
 
 public class AgentController implements Initializable {
 
-	SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
-			.addAnnotatedClass(Owner.class).addAnnotatedClass(Agent.class).addAnnotatedClass(Storage.class)
-			.buildSessionFactory();
-
-	Session session = factory.getCurrentSession();
+	SessionFactory factory = HibernateUtility.getSessionFactory();
 
 	@FXML
 	ListView<Storage> maintainedSt;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		session.beginTransaction();
 
+		Session session = factory.getCurrentSession();
 		nameText.setText(Singleton.getInstance().getAgent().getUser().getPersonName());
 		accountNameText.setText(Singleton.getInstance().getAgent().getUser().getAccountName());
 		commissionText.setText("" + Singleton.getInstance().getAgent().getCommission() + "");
 		ratingText.setText("" + Singleton.getInstance().getAgent().getRating() + "");
 
 		List<Storage> storageList = new ArrayList<>();
-
+		// pozvolqva da se izbere samo skladove sus status 0 - svobodni za otdavane
 		storageList = session.createQuery("from Storage s where id_storage_agent = '"
-				+ Singleton.getInstance().getAgent().getUser().getUserID() + "'").list();
+				+ Singleton.getInstance().getAgent().getUser().getUserID() + "' and status = 0").list();
 
 		storageCombo.getItems().clear();
 		storageCombo.getItems().addAll(storageList);
 		maintainedSt.getItems().addAll(storageList);
 
+		session.getTransaction().commit();
 	}
 
 	@FXML
@@ -112,6 +110,8 @@ public class AgentController implements Initializable {
 	TextField fullPrice;
 
 	public void createContract(ActionEvent event) {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
 		Storage choosenStorage = storageCombo.getValue();
 		String renterNme = renterName.getText();
 		String renterPn = renterPin.getText();

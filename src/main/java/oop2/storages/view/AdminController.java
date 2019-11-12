@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,18 +18,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import oop2.storages.Agent;
 import oop2.storages.Category;
+import oop2.storages.HibernateUtility;
 import oop2.storages.Owner;
 import oop2.storages.StorageType;
 import oop2.storages.User;
 
 public class AdminController implements Initializable {
 
-	// create session factory
-	SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
-			.buildSessionFactory();
-
-	// create session
-	Session session = factory.getCurrentSession();
+	SessionFactory factory = HibernateUtility.getSessionFactory();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -38,17 +33,17 @@ public class AdminController implements Initializable {
 		List<Category> categories = new ArrayList<>();
 
 		// start a transaction
-		session.beginTransaction();
+		Session session = factory.getCurrentSession();
+		//session.beginTransaction();
 
 		types = session.createQuery("from StorageType s").list();
-
 		categories = session.createQuery("from Category s").list();
 
 		stTypes.getItems().clear();
 		stTypes.getItems().addAll(types);
 		stCategories.getItems().clear();
 		stCategories.getItems().addAll(categories);
-
+		session.getTransaction().commit();
 	}
 
 	//
@@ -81,49 +76,39 @@ public class AdminController implements Initializable {
 
 		if (!account.isEmpty() && !password.isEmpty() && !name.isEmpty() && !pin.isEmpty()) {
 			System.out.println(account + password + name + pin);
+			
+			User tempUser = new User(account, password, name, pin);
+			
+			Session session = factory.getCurrentSession();
+			// start a transaction
+			session.beginTransaction();
 
-			try {
-				// create a student object
-				System.out.println("Creating new User object...");
-				User tempUser = new User(account, password, name, pin);
+			User checkUser = new User();
+			checkUser = (User) session
+					.createQuery("from User s where s.accountName='" + account + "' OR s.pin='" + pin + "'")
+					.uniqueResult();
 
-				// start a transaction
-				session.beginTransaction();
+			System.out.println(checkUser);
 
-				User checkUser = new User();
-				checkUser = (User) session
-						.createQuery("from User s where s.accountName='" + account + "' OR s.pin='" + pin + "'")
-						.uniqueResult();
+			if (checkUser == null) {
+				session.save(tempUser);
 
-				System.out.println(checkUser);
-
-				if (checkUser == null) {
-					// save the student object
-					System.out.println("Saving the user...");
-					session.save(tempUser);
-					Owner tempOwner = new Owner(tempUser);
-					session.save(tempOwner);
-				} else {
-					if (checkUser.getAccountName().equals(account))
-						System.out.println("Account name Duplicate");
-					else if (checkUser.getPin().equals(pin))
-						System.out.println("PIN Duplicate");
-					else
-						System.out.println("Account name and PIN Duplicate");
-				}
-
-				// commit transaction
-				session.getTransaction().commit();
-
-				System.out.println("Done! Owner");
+				Owner tempOwner = new Owner(tempUser);
+				session.save(tempOwner);
+			} else {
+				// ne znam dali raboti
+				if (checkUser.getAccountName().equals(account))
+					System.out.println("Account name Duplicate");
+				else if (checkUser.getPin().equals(pin))
+					System.out.println("PIN Duplicate");
+				else
+					System.out.println("Account name and PIN Duplicate");
 			}
 
-			finally {
-				factory.close();
-			}
+			// commit transaction
+			session.getTransaction().commit();
 		} else
 			System.out.println("Dont leave empty fields");
-
 	}
 
 	//
@@ -158,53 +143,37 @@ public class AdminController implements Initializable {
 		if (!account.isEmpty() && !password.isEmpty() && !name.isEmpty() && !pin.isEmpty() && !commission.isEmpty()) {
 			System.out.println(account + password + name + pin);
 
-			/*
-			 * // create session factory SessionFactory factory = new
-			 * Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
-			 * .buildSessionFactory();
-			 * 
-			 * // create session Session session = factory.getCurrentSession();
-			 */
+			User tempUser = new User(account, password, name, pin);
+			
+			Session session = factory.getCurrentSession();
+			// start a transaction
+			session.beginTransaction();
 
-			try {
-				// create a student object
-				System.out.println("Creating new User object...");
-				User tempUser = new User(account, password, name, pin);
+			User checkUser = (User) session
+					.createQuery("from User s where s.accountName='" + account + "' OR s.pin='" + pin + "'")
+					.uniqueResult();
 
-				// start a transaction
-				session.beginTransaction();
+			System.out.println(checkUser);
 
-				User checkUser = (User) session
-						.createQuery("from User s where s.accountName='" + account + "' OR s.pin='" + pin + "'")
-						.uniqueResult();
+			if (checkUser == null) {
+				session.save(tempUser);
 
-				System.out.println(checkUser);
-
-				if (checkUser == null) {
-					// save the student object
-					System.out.println("Saving the user...");
-					session.save(tempUser);
-					Agent tempAgent = new Agent(tempUser, Double.parseDouble(agentCommission.getText()));
-					session.save(tempAgent);
-				} else {
-					if (checkUser.getAccountName().equals(account))
-						System.out.println("Account name Duplicate");
-					else if (checkUser.getPin().equals(pin))
-						System.out.println("PIN Duplicate");
-					else
-						System.out.println("Account name and PIN Duplicate");
-				}
-
-				// commit transaction
-				session.getTransaction().commit();
-
-				System.out.println("Done! Agent");
+				Agent tempAgent = new Agent(tempUser, Double.parseDouble(agentCommission.getText()));
+				session.save(tempAgent);
+			} else {
+				// pak ne znam dali raboti
+				if (checkUser.getAccountName().equals(account))
+					System.out.println("Account name Duplicate");
+				else if (checkUser.getPin().equals(pin))
+					System.out.println("PIN Duplicate");
+				else
+					System.out.println("Account name and PIN Duplicate");
 			}
 
-			finally {
-				factory.close();
-			}
-		}
+			// commit transaction
+			session.getTransaction().commit();
+		} else
+			System.out.println("Dont leave empty fields");
 
 	}
 
@@ -222,12 +191,15 @@ public class AdminController implements Initializable {
 
 	@FXML
 	public void addCategory(ActionEvent event) {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+
 		String category = storageCategory.getText();
 		Category tempCategory = new Category(category);
 		session.save(tempCategory);
+
 		// commit transaction
 		session.getTransaction().commit();
-
 	}
 
 	//
@@ -244,16 +216,18 @@ public class AdminController implements Initializable {
 
 	@FXML
 	public void addType(ActionEvent event) {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+
 		String type = storageType.getText();
 		StorageType tempType = new StorageType(type);
 		session.save(tempType);
+
 		// commit transaction
 		session.getTransaction().commit();
-
 	}
 
 	public void keyPressed(KeyEvent event) {
-
 		Control[] focusOrder = new Control[] { ownerAccountName, ownerAccountPassword, ownerName, ownerPin, crOwnBtn,
 				agentAccountName, agentAccountPassword, agentName, agentPin, agentCommission, crAgBtn };
 
@@ -261,7 +235,5 @@ public class AdminController implements Initializable {
 			Control nextControl = focusOrder[i + 1];
 			focusOrder[i].addEventHandler(ActionEvent.ACTION, e -> nextControl.requestFocus());
 		}
-
 	}
-
 }

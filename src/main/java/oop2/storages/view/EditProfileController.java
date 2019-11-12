@@ -47,7 +47,6 @@ public class EditProfileController implements Initializable {
 			labelCommission.setVisible(true);
 			newCommission.setVisible(true);
 		}
-
 	}
 
 	public void editProfile(ActionEvent event) {
@@ -57,14 +56,9 @@ public class EditProfileController implements Initializable {
 
 		session.beginTransaction();
 
-		// save the student object
 		if (newCommission.isVisible()) {
-		//	Agent agent = new Agent(user, Double.parseDouble(newCommission.getText()));
 			Agent agent = Singleton.getInstance().getAgent();
 			agent.setCommission(Double.parseDouble(newCommission.getText()));
-			//
-			//Ne raboti
-			//
 			session.update(user);
 			System.out.println(agent);
 			session.update(agent);
@@ -73,18 +67,14 @@ public class EditProfileController implements Initializable {
 
 		// commit transaction
 		session.getTransaction().commit();
-
 	}
 
 	public void keyPressed(KeyEvent event) {
-
 		Control[] focusOrder = new Control[] { newName, newPassword, editPrBtn };
 
 		for (int i = 0; i < focusOrder.length - 1; i++) {
 			Control nextControl = focusOrder[i + 1];
 			focusOrder[i].addEventHandler(ActionEvent.ACTION, e -> nextControl.requestFocus());
 		}
-
 	}
-
 }

@@ -1,5 +1,6 @@
 package oop2.storages;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -8,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import oop2.storages.view.Singleton;
 
 public class App extends Application {
 
@@ -22,6 +24,13 @@ public class App extends Application {
 		primaryStage.show();
 
 		primaryStage.setOnCloseRequest((WindowEvent event1) -> {
+			if (Singleton.getInstance().getUser() != null) {
+				Session session = factory.getCurrentSession();
+				session.beginTransaction();
+				Singleton.getInstance().getUser().setStatusLogin(false);
+				session.update(Singleton.getInstance().getUser());
+				session.getTransaction().commit();
+			}
 			factory.close();
 			Platform.exit();
 		});

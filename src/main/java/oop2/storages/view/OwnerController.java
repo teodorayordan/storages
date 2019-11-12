@@ -29,31 +29,25 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import oop2.storages.Agent;
 import oop2.storages.Category;
+import oop2.storages.HibernateUtility;
 import oop2.storages.Owner;
 import oop2.storages.Storage;
 import oop2.storages.StorageType;
 import oop2.storages.User;
 
 public class OwnerController implements Initializable {
-
+	
+	SessionFactory factory = HibernateUtility.getSessionFactory();
+	
 	List<Agent> agentList = new ArrayList<>();
 	List<StorageType> typeList = new ArrayList<>();
 	List<Category> categoryList = new ArrayList<>();
 	List<Storage> storageList = new ArrayList<>();
 
-	SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class)
-			.addAnnotatedClass(Owner.class).addAnnotatedClass(Agent.class).addAnnotatedClass(Storage.class)
-			.buildSessionFactory();
-
-	Session session = factory.getCurrentSession();
-
-	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
-		session.beginTransaction();
-		
-
+		//session.beginTransaction();
+		Session session = factory.getCurrentSession();
 		nameText.setText(Singleton.getInstance().getOwner().getUser().getPersonName());
 		accountNameText.setText(Singleton.getInstance().getOwner().getUser().getAccountName());
 
@@ -67,7 +61,7 @@ public class OwnerController implements Initializable {
 				"from Storage s where id_owner = '" + Singleton.getInstance().getOwner().getUser().getUserID() + "'")
 				.list();
 
-		// session.getTransaction().commit();
+		 session.getTransaction().commit();
 
 		comboAgent.getItems().clear();
 		comboAgent.getItems().addAll(agentList);
@@ -87,7 +81,7 @@ public class OwnerController implements Initializable {
 
 	@FXML
 	Label accountNameText;
-	
+
 	@FXML
 	AnchorPane anchorPane;
 
@@ -98,21 +92,10 @@ public class OwnerController implements Initializable {
 			Stage stage = new Stage();
 			stage.setScene(new Scene(root));
 			stage.showAndWait();
-			
-			
-			stage.setOnCloseRequest((WindowEvent event1) -> {
-			    Platform.runLater(() -> {
-					//anchorPane.getScene();
-					//stage.setScene(anchorPane.getScene());
-			    });
-			});
-			
-		/*	Node node = anchorPane.getShape();
 
-			PlatformHelper.run(() -> {
-			  node.setLayoutX(editPrBtn.getScene().getWidth());
-			  node.setLayoutY(editPrBtn.getScene().getHeight());
-			});*/
+			stage.setOnCloseRequest((WindowEvent event1) -> {
+				//kod da update profilnata stranica
+			});
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -145,7 +128,7 @@ public class OwnerController implements Initializable {
 	ComboBox<Category> comboCategory;
 
 	public void createStorage(ActionEvent event) {
-
+		Session session = factory.getCurrentSession();
 		Owner owner = Singleton.getInstance().getOwner();
 		Agent chosenAgent = (Agent) comboAgent.getValue();
 		StorageType chosenType = (StorageType) comboType.getValue();
@@ -160,7 +143,7 @@ public class OwnerController implements Initializable {
 		System.out.println(tempStorage);
 
 		// start a transaction
-		// session.beginTransaction();
+		session.beginTransaction();
 
 		// save the student object
 		session.save(tempStorage);
@@ -169,7 +152,7 @@ public class OwnerController implements Initializable {
 		session.getTransaction().commit();
 
 	}
-	
+
 	@FXML
 	Button showStBtn;
 
@@ -189,20 +172,20 @@ public class OwnerController implements Initializable {
 		}
 
 	}
-	
+
 	public void keyPressed(KeyEvent event) {
-		/*KeyCode key = event.getCode();
-		if(key == KeyCode.ENTER) {
-			stClmConditions.requestFocus();
-		}*/
+		/*
+		 * KeyCode key = event.getCode(); if(key == KeyCode.ENTER) {
+		 * stClmConditions.requestFocus(); }
+		 */
 
 		Control[] focusOrder = new Control[] { storageAddress, stClmConditions, storageSize, crStorageBtn };
 
-		for (int i = 0; i < focusOrder.length-1; i++) {
+		for (int i = 0; i < focusOrder.length - 1; i++) {
 			Control nextControl = focusOrder[i + 1];
 			focusOrder[i].addEventHandler(ActionEvent.ACTION, e -> nextControl.requestFocus());
 		}
-			
+
 	}
 
 }

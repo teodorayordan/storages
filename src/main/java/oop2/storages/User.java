@@ -85,6 +85,14 @@ public class User {
 	public String getAccountName() {
 		return accountName;
 	}
+	
+	public Boolean getStatusLogin() {
+		return statusLogin;
+	}
+
+	public void setStatusLogin(Boolean statusLogin) {
+		this.statusLogin = statusLogin;
+	}
 
 	@Override
 	public String toString() {

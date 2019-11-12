@@ -5,6 +5,9 @@ import java.util.ResourceBundle;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+
+import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Single;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -44,8 +47,6 @@ public class Controller implements Initializable {
 
 	@FXML
 	Label label;
-	//
-	//
 
 	@FXML
 	public void login(ActionEvent event) {
@@ -54,6 +55,7 @@ public class Controller implements Initializable {
 
 		// create session
 		Session session = factory.getCurrentSession();
+		session.beginTransaction();
 
 		if (accountNameField.getText().equals("admin") && passwordField.getText().equals("admin"))
 			try {
@@ -79,7 +81,6 @@ public class Controller implements Initializable {
 			String accountPassword = passwordField.getText();
 
 			// start a transaction
-			session.beginTransaction();
 
 			User loginResult = (User) session.createQuery("from User s where s.accountName='" + accountName
 					+ "' and s.accountPassword='" + accountPassword + "'").uniqueResult();
@@ -90,17 +91,19 @@ public class Controller implements Initializable {
 			} else {
 				Singleton.getInstance().setUser(loginResult);
 				System.out.println("There is a account");
-				
+
 				// Proverka koe ot dvete e, ednoto shte e null
 				Owner owner = session.get(Owner.class, loginResult.getUserID());
 				Agent agent = session.get(Agent.class, loginResult.getUserID());
 
-				if (owner != null) {
+				if (owner != null && owner.getUser().getStatusLogin() == false) {
 					System.out.println("Its an owner");
 					System.out.println(owner);
 					Singleton.getInstance().setOwner(owner);
-					try {
+					Singleton.getInstance().getUser().setStatusLogin(true); // setvame che e lognat
+					session.update(Singleton.getInstance().getUser());
 
+					try {
 						Parent root = FXMLLoader.load(getClass().getResource("OwnerPane.fxml"));
 						Stage stage = new Stage();
 						stage.setScene(new Scene(root));
@@ -109,6 +112,13 @@ public class Controller implements Initializable {
 						loginButton.getScene().getWindow().hide();
 
 						stage.setOnCloseRequest((WindowEvent event1) -> {
+							if (Singleton.getInstance().getUser() != null) {
+								Session session1 = factory.getCurrentSession();
+								session1.beginTransaction();
+								Singleton.getInstance().getUser().setStatusLogin(false);
+								session1.update(Singleton.getInstance().getUser());
+								session1.getTransaction().commit();
+							}
 							factory.close();
 							Platform.exit();
 						});
@@ -118,13 +128,14 @@ public class Controller implements Initializable {
 					}
 				}
 
-				else if (agent != null) {
+				else if (agent != null && agent.getUser().getStatusLogin() == false) {
 					System.out.println("Its an agent");
 					System.out.println(agent);
 					Singleton.getInstance().setAgent(agent);
+					Singleton.getInstance().getUser().setStatusLogin(true);
+					session.update(Singleton.getInstance().getUser());
 
 					try {
-
 						Parent root = FXMLLoader.load(getClass().getResource("AgentPane.fxml"));
 						Stage stage = new Stage();
 						stage.setScene(new Scene(root));
@@ -134,6 +145,13 @@ public class Controller implements Initializable {
 						loginButton.getScene().getWindow().hide();
 
 						stage.setOnCloseRequest((WindowEvent event1) -> {
+							if (Singleton.getInstance().getUser() != null) {
+								Session session1 = factory.getCurrentSession();
+								session1.beginTransaction();
+								Singleton.getInstance().getUser().setStatusLogin(false);
+								session1.update(Singleton.getInstance().getUser());
+								session1.getTransaction().commit();
+							}
 							factory.close();
 							Platform.exit();
 						});
@@ -141,17 +159,15 @@ public class Controller implements Initializable {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+				} else {
+					System.out.println("Contact an admin for help. It appears youre logged in.");
+					session.getTransaction().commit();
 				}
 
-				else {
-					System.out.println("Contact an admin for help");
-				}
-
-				// commit transaction
-				
 			}
-			session.getTransaction().commit();
-		}
-	}
+			// commit transaction
 
+		}
+		// session.getTransaction().commit();
+	}
 }
