@@ -24,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import oop2.storages.Agent;
 import oop2.storages.Contract;
@@ -35,9 +36,6 @@ import oop2.storages.User;
 public class AgentController implements Initializable {
 
 	SessionFactory factory = HibernateUtility.getSessionFactory();
-
-	@FXML
-	ListView<Storage> maintainedSt;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -81,6 +79,7 @@ public class AgentController implements Initializable {
 			Parent root = FXMLLoader.load(getClass().getResource("EditProfile.fxml"));
 			Stage stage = new Stage();
 			stage.setScene(new Scene(root));
+			stage.setTitle("Edit Profile");
 			stage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -129,9 +128,119 @@ public class AgentController implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	@FXML
+	ListView<Storage> maintainedSt;
+
+	@FXML
+	Button showStBtn;
+
+	@FXML
+	Label ownerText;
+
+	@FXML
+	Label agentText;
+
+	@FXML
+	Label typeText;
+
+	@FXML
+	Label categoryText;
+
+	@FXML
+	Label addressText;
+
+	@FXML
+	Label sizeText;
+
+	@FXML
+	Label climateText;
+
+	@FXML
+	Label statusText;
+
+	@FXML
+	AnchorPane showStorage;
+
+	public void showStorage(ActionEvent event) {
+		try {
+			// да се добави валидация дали е селектирано
+			showStorage.setVisible(true);
+
+			Storage tempStorage = maintainedSt.getSelectionModel().getSelectedItem();
+			Singleton.getInstance().setStorage(tempStorage);
+
+			ownerText.setText(Singleton.getInstance().getStorage().getOwner().getUser().getPersonName());
+			agentText.setText(Singleton.getInstance().getStorage().getAgent().getUser().getPersonName());
+			typeText.setText(Singleton.getInstance().getStorage().getStorageType().getTypeName());
+			categoryText.setText(Singleton.getInstance().getStorage().getCategory().getCategoryName());
+			addressText.setText(Singleton.getInstance().getStorage().getStorageAddress());
+			sizeText.setText("" + Singleton.getInstance().getStorage().getStorageSize() + "");
+			climateText.setText(Singleton.getInstance().getStorage().getClimateConditions());
+			statusText.setText("" + Singleton.getInstance().getStorage().getStorageStatus() + "");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@FXML
+	ListView<Contract> activeContracts;
+
+	@FXML
+	Label activeConText;
+
+	@FXML
+	Button allContrBtn;
+
+	@FXML
+	Button contractInfoBtn;
+
+	@FXML
+	Label allConText;
+
+	@FXML
+	Label stDateText;
+
+	@FXML
+	Label endDateText;
+
+	@FXML
+	ListView<Contract> allContracts;
+
+	@FXML
+	DatePicker startDate;
+
+	@FXML
+	DatePicker endDate;
+
+	public void showContracts(ActionEvent event) {
+		activeContracts.setVisible(false);
+		activeConText.setVisible(false);
+		allConText.setVisible(true);
+		stDateText.setVisible(true);
+		endDateText.setVisible(true);
+		allContracts.setVisible(true);
+		startDate.setVisible(true);
+		endDate.setVisible(true);
+	}
+
+	public void showContractInfo(ActionEvent event) {
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("ContractInfo.fxml"));
+			Stage stage = new Stage();
+			stage.setScene(new Scene(root));
+			stage.setTitle("Contract Info");
+			stage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public void keyPressed(KeyEvent event) {
 
-		Control[] focusOrder = new Control[] { renterName, renterPin, priceContract, crContractBtn };
+		Control[] focusOrder = new Control[] { storageCombo, renterName, renterPin, dateContract, priceContract,
+				crContractBtn };
 
 		for (int i = 0; i < focusOrder.length - 1; i++) {
 			Control nextControl = focusOrder[i + 1];
@@ -139,24 +248,4 @@ public class AgentController implements Initializable {
 		}
 
 	}
-
-	@FXML
-	Button showStBtn;
-
-	public void showStorage(ActionEvent event) {
-		try {
-			Singleton.getInstance().setStorage(maintainedSt.getSelectionModel().getSelectedItem());
-			
-			Parent root = FXMLLoader.load(getClass().getResource("ShowStorage.fxml"));
-			Stage stage = new Stage();
-			stage.setScene(new Scene(root));
-			stage.setTitle("Storage Details");
-			stage.show();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
 }

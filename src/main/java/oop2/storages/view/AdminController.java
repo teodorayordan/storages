@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import javafx.event.ActionEvent;
@@ -16,12 +15,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import oop2.storages.Agent;
-import oop2.storages.Category;
-import oop2.storages.HibernateUtility;
 import oop2.storages.Owner;
 import oop2.storages.StorageType;
 import oop2.storages.User;
+import oop2.storages.Agent;
+import oop2.storages.Category;
+import oop2.storages.HibernateUtility;
 
 public class AdminController implements Initializable {
 
@@ -34,7 +33,7 @@ public class AdminController implements Initializable {
 
 		// start a transaction
 		Session session = factory.getCurrentSession();
-		//session.beginTransaction();
+		// session.beginTransaction();
 
 		types = session.createQuery("from StorageType s").list();
 		categories = session.createQuery("from Category s").list();
@@ -46,9 +45,9 @@ public class AdminController implements Initializable {
 		session.getTransaction().commit();
 	}
 
-	//
-	// Create Owner Elements
-	//
+	@FXML
+	Button crOwnBtn;
+
 	@FXML
 	TextField ownerAccountName;
 
@@ -60,12 +59,6 @@ public class AdminController implements Initializable {
 
 	@FXML
 	TextField ownerPin;
-
-	@FXML
-	Button crOwnBtn;
-
-	// @FXML
-	// Button createOwner;
 
 	@FXML
 	public void createOwner(ActionEvent event) {
@@ -83,8 +76,7 @@ public class AdminController implements Initializable {
 			// start a transaction
 			session.beginTransaction();
 
-			User checkUser = new User();
-			checkUser = (User) session
+			User checkUser = (User) session
 					.createQuery("from User s where s.accountName='" + account + "' OR s.pin='" + pin + "'")
 					.uniqueResult();
 
@@ -92,7 +84,6 @@ public class AdminController implements Initializable {
 
 			if (checkUser == null) {
 				session.save(tempUser);
-
 				Owner tempOwner = new Owner(tempUser);
 				session.save(tempOwner);
 			} else {
@@ -111,9 +102,6 @@ public class AdminController implements Initializable {
 			System.out.println("Dont leave empty fields");
 	}
 
-	//
-	// Create Agent Elements
-	//
 	@FXML
 	TextField agentAccountName;
 
@@ -177,9 +165,6 @@ public class AdminController implements Initializable {
 
 	}
 
-	//
-	// Category Elements
-	//
 	@FXML
 	TextField storageCategory;
 
@@ -202,9 +187,6 @@ public class AdminController implements Initializable {
 		session.getTransaction().commit();
 	}
 
-	//
-	// Type Elements
-	//
 	@FXML
 	TextField storageType;
 
@@ -228,12 +210,18 @@ public class AdminController implements Initializable {
 	}
 
 	public void keyPressed(KeyEvent event) {
-		Control[] focusOrder = new Control[] { ownerAccountName, ownerAccountPassword, ownerName, ownerPin, crOwnBtn,
-				agentAccountName, agentAccountPassword, agentName, agentPin, agentCommission, crAgBtn };
+
+		Control[] focusOrder = new Control[] { ownerAccountName, ownerAccountPassword, ownerName, ownerPin,
+				agentAccountName, agentAccountPassword, agentName, agentPin, agentCommission };
 
 		for (int i = 0; i < focusOrder.length - 1; i++) {
 			Control nextControl = focusOrder[i + 1];
 			focusOrder[i].addEventHandler(ActionEvent.ACTION, e -> nextControl.requestFocus());
 		}
+
+		/*
+		 * if (ownerPin.isFocused()) { crOwnBtn.setDefaultButton(true); } else if
+		 * (agentCommission.isFocused()) { crAgBtn.setDefaultButton(true); }
+		 */
 	}
 }

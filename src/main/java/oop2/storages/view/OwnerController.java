@@ -36,9 +36,9 @@ import oop2.storages.StorageType;
 import oop2.storages.User;
 
 public class OwnerController implements Initializable {
-	
+
 	SessionFactory factory = HibernateUtility.getSessionFactory();
-	
+
 	List<Agent> agentList = new ArrayList<>();
 	List<StorageType> typeList = new ArrayList<>();
 	List<Category> categoryList = new ArrayList<>();
@@ -46,7 +46,7 @@ public class OwnerController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		//session.beginTransaction();
+		// session.beginTransaction();
 		Session session = factory.getCurrentSession();
 		nameText.setText(Singleton.getInstance().getOwner().getUser().getPersonName());
 		accountNameText.setText(Singleton.getInstance().getOwner().getUser().getAccountName());
@@ -61,7 +61,7 @@ public class OwnerController implements Initializable {
 				"from Storage s where id_owner = '" + Singleton.getInstance().getOwner().getUser().getUserID() + "'")
 				.list();
 
-		 session.getTransaction().commit();
+		session.getTransaction().commit();
 
 		comboAgent.getItems().clear();
 		comboAgent.getItems().addAll(agentList);
@@ -94,7 +94,7 @@ public class OwnerController implements Initializable {
 			stage.showAndWait();
 
 			stage.setOnCloseRequest((WindowEvent event1) -> {
-				//kod da update profilnata stranica
+				// kod da update profilnata stranica
 			});
 
 		} catch (Exception e) {
@@ -102,9 +102,6 @@ public class OwnerController implements Initializable {
 		}
 
 	}
-
-	@FXML
-	ListView<Storage> ownedStorages;
 
 	@FXML
 	Button crStorageBtn;
@@ -145,7 +142,6 @@ public class OwnerController implements Initializable {
 		// start a transaction
 		session.beginTransaction();
 
-		// save the student object
 		session.save(tempStorage);
 
 		// commit transaction
@@ -154,17 +150,69 @@ public class OwnerController implements Initializable {
 	}
 
 	@FXML
+	ListView<Storage> ownedStorages;
+
+	@FXML
 	Button showStBtn;
 
+	@FXML
+	Label ownerText;
+
+	@FXML
+	Label agentText;
+
+	@FXML
+	Label typeText;
+
+	@FXML
+	Label categoryText;
+
+	@FXML
+	Label addressText;
+
+	@FXML
+	Label sizeText;
+
+	@FXML
+	Label climateText;
+
+	@FXML
+	Label statusText;
+
+	@FXML
+	AnchorPane showStorage;
+
 	public void showStorage(ActionEvent event) {
-
 		try {
-			Singleton.getInstance().setStorage(ownedStorages.getSelectionModel().getSelectedItem());
+			// да се добави валидация дали е селектирано
+			showStorage.setVisible(true);
+			Storage tempStorage = ownedStorages.getSelectionModel().getSelectedItem();
+			Singleton.getInstance().setStorage(tempStorage);
 
-			Parent root = FXMLLoader.load(getClass().getResource("ShowStorage.fxml"));
+			ownerText.setText(Singleton.getInstance().getStorage().getOwner().getUser().getPersonName());
+			agentText.setText(Singleton.getInstance().getStorage().getAgent().getUser().getPersonName());
+			typeText.setText(Singleton.getInstance().getStorage().getStorageType().getTypeName());
+			categoryText.setText(Singleton.getInstance().getStorage().getCategory().getCategoryName());
+			addressText.setText(Singleton.getInstance().getStorage().getStorageAddress());
+			sizeText.setText("" + Singleton.getInstance().getStorage().getStorageSize() + "");
+			climateText.setText(Singleton.getInstance().getStorage().getClimateConditions());
+			statusText.setText("" + Singleton.getInstance().getStorage().getStorageStatus() + "");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@FXML
+	Button editStorageBtn;
+
+	public void editStorage(ActionEvent event) {
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("EditStorage.fxml"));
 			Stage stage = new Stage();
 			stage.setScene(new Scene(root));
-			stage.setTitle("Storage Details");
+			stage.setTitle("Edit Storage");
 			stage.show();
 
 		} catch (Exception e) {
@@ -179,7 +227,8 @@ public class OwnerController implements Initializable {
 		 * stClmConditions.requestFocus(); }
 		 */
 
-		Control[] focusOrder = new Control[] { storageAddress, stClmConditions, storageSize, crStorageBtn };
+		Control[] focusOrder = new Control[] { comboAgent, comboType, comboCategory, storageAddress, stClmConditions,
+				storageSize, crStorageBtn };
 
 		for (int i = 0; i < focusOrder.length - 1; i++) {
 			Control nextControl = focusOrder[i + 1];

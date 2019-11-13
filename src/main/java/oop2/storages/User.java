@@ -52,6 +52,7 @@ public class User {
 		this.accountPassword = accountPassword;
 		this.personName = personName;
 		this.pin = pin;
+		this.statusLogin = false;
 	}
 
 	public String getAccountPassword() {
@@ -97,7 +98,11 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [userID=" + userID + ", accountName=" + accountName + ", accountPassword=" + accountPassword
-				+ ", personName=" + personName + ", pin=" + pin + "]";
+				+ ", personName=" + personName + ", pin=" + pin + ", statusLogin=" + statusLogin + "]";
 	}
+
+
+
+
 
 }

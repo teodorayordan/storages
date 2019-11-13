@@ -1,4 +1,4 @@
-package oop2.storages;
+package oop2.storages.view;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -9,7 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import oop2.storages.view.Singleton;
+import oop2.storages.HibernateUtility;
 
 public class App extends Application {
 
@@ -19,7 +19,7 @@ public class App extends Application {
 		// create session factory
 		SessionFactory factory = HibernateUtility.getSessionFactory();
 
-		Parent root = FXMLLoader.load(getClass().getResource("view/Login.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
 		primaryStage.setScene(new Scene(root));
 		primaryStage.show();
 

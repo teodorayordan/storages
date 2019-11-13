@@ -67,4 +67,72 @@ public class Contract {
 				+ ", renterPin=" + renterPin + "]";
 	}
 
+	public Integer getContractID() {
+		return contractID;
+	}
+
+	public void setContractID(Integer contractID) {
+		this.contractID = contractID;
+	}
+
+	public Agent getAgent() {
+		return agent;
+	}
+
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
+
+	public Storage getStorage() {
+		return storage;
+	}
+
+	public void setStorage(Storage storage) {
+		this.storage = storage;
+	}
+
+	public LocalDate getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
+	}
+
+	public LocalDate getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	public String getRenterName() {
+		return renterName;
+	}
+
+	public void setRenterName(String renterName) {
+		this.renterName = renterName;
+	}
+
+	public String getRenterPin() {
+		return renterPin;
+	}
+
+	public void setRenterPin(String renterPin) {
+		this.renterPin = renterPin;
+	}
+	
+	
+	
+
+
 }

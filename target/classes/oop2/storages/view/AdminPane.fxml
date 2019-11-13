@@ -33,7 +33,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Button fx:id="crOwnBtn" mnemonicParsing="false" onAction="#createOwner" text="Create Owner" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Button fx:id="crOwnBtn" mnemonicParsing="false" onAction="#createOwner" onKeyPressed="#keyPressed" text="Create Owner" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                               <Label text="Owner PIN" GridPane.rowIndex="3" />
                               <Label text="Account Password" GridPane.rowIndex="1" />
                               <Label text="Owner Name" GridPane.rowIndex="2" />
@@ -76,7 +76,7 @@
                               <TextField fx:id="agentPin" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                <Label text="Agent commission" GridPane.rowIndex="4" />
                               <TextField fx:id="agentCommission" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                              <Button fx:id="crAgBtn" mnemonicParsing="false" onAction="#createAgent" text="Create Agent" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <Button fx:id="crAgBtn" mnemonicParsing="false" onAction="#createAgent" onKeyPressed="#keyPressed" text="Create Agent" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                            </children>
                         </GridPane>
                      </children>
@@ -93,15 +93,16 @@
                             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                           </columnConstraints>
                           <rowConstraints>
-                            <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                            <RowConstraints maxHeight="224.0" minHeight="10.0" prefHeight="216.0" vgrow="SOMETIMES" />
-                            <RowConstraints maxHeight="44.0" minHeight="10.0" prefHeight="41.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="22.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="264.0" minHeight="10.0" prefHeight="263.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label text="Storage Category" />
-                              <TextField fx:id="storageCategory" GridPane.columnIndex="1" />
-                              <Button fx:id="crStCategoryBtn" mnemonicParsing="false" onAction="#addCategory" prefHeight="12.0" prefWidth="109.0" text="Add Category" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <ListView fx:id="stCategories" prefHeight="210.0" prefWidth="220.0" GridPane.rowIndex="1" />
+                              <TextField fx:id="storageCategory" GridPane.columnIndex="1" GridPane.valignment="TOP" />
+                              <Button fx:id="crStCategoryBtn" mnemonicParsing="false" onAction="#addCategory" text="Add Category" GridPane.valignment="TOP" />
+                              <ListView fx:id="stCategories" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label fx:id="categoryText" text="Such category already exists!" textFill="#fc0000" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                              <Label prefHeight="17.0" prefWidth="121.0" text="Storage Categories" GridPane.rowIndex="2" GridPane.valignment="TOP" />
                            </children>
                         </GridPane>
                      </children></AnchorPane>
@@ -117,15 +118,16 @@
                             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                           </columnConstraints>
                           <rowConstraints>
-                            <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                            <RowConstraints maxHeight="224.0" minHeight="10.0" prefHeight="216.0" vgrow="SOMETIMES" />
-                            <RowConstraints maxHeight="44.0" minHeight="10.0" prefHeight="41.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="22.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="264.0" minHeight="10.0" prefHeight="263.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label text="Storage Type" />
-                              <TextField fx:id="storageType" GridPane.columnIndex="1" />
-                              <Button fx:id="crStTypeBtn" mnemonicParsing="false" onAction="#addType" prefHeight="12.0" prefWidth="109.0" text="Add Type" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <ListView fx:id="stTypes" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                              <Label text="Storage Type" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                              <TextField fx:id="storageType" GridPane.columnIndex="1" GridPane.valignment="TOP" />
+                              <Button fx:id="crStTypeBtn" mnemonicParsing="false" onAction="#addType" prefHeight="25.0" prefWidth="89.0" text="Add Type" GridPane.valignment="TOP" />
+                              <ListView fx:id="stTypes" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label fx:id="typeText" text="Such type already exists!" textFill="#fc0000" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP" />
                            </children>
                         </GridPane>
                      </children></AnchorPane>

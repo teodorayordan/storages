@@ -1,9 +1,11 @@
 package oop2.storages.view;
 
 import oop2.storages.Agent;
+import oop2.storages.Contract;
 import oop2.storages.Owner;
 import oop2.storages.Storage;
 import oop2.storages.User;
+
 
 public class Singleton {
 	private static Singleton instance = new Singleton();
@@ -16,6 +18,7 @@ public class Singleton {
 	private Owner owner;
 	private Agent agent;
 	private Storage storage;
+	private Contract contract;
 
 	public User getUser() {
 		return user;
@@ -49,5 +52,14 @@ public class Singleton {
 		this.storage = storage;
 	}
 
+	public Contract getContract() {
+		return contract;
+	}
+
+	public void setContract(Contract contract) {
+		this.contract = contract;
+	}
 	
+	
+
 }

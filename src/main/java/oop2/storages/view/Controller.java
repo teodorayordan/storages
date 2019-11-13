@@ -2,12 +2,8 @@ package oop2.storages.view;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Single;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,9 +12,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import oop2.storages.Agent;
@@ -34,16 +32,14 @@ public class Controller implements Initializable {
 
 	}
 
-	//
-	// Login
 	@FXML
-	Button loginButton;
+	Button loginBtn;
 
 	@FXML
-	TextField accountNameField;
+	TextField accountName;
 
 	@FXML
-	PasswordField passwordField;
+	PasswordField accountPassword;
 
 	@FXML
 	Label label;
@@ -56,17 +52,19 @@ public class Controller implements Initializable {
 		// create session
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
+		String accName = accountName.getText();
+		String accPassword = accountPassword.getText();
 
-		if (accountNameField.getText().equals("admin") && passwordField.getText().equals("admin"))
+		if (accName.equals("admin") && accPassword.equals("admin"))
 			try {
-				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("AdminPane.fxml"));
-				Parent root1 = (Parent) fxmlLoader.load();
+				Parent root = FXMLLoader.load(getClass().getResource("AdminPane.fxml"));
 				Stage stage = new Stage();
-				stage.setScene(new Scene(root1));
+				stage.setTitle("Admin Profile");
+				stage.setScene(new Scene(root));
 				stage.show();
 
 				// hide login pane
-				loginButton.getScene().getWindow().hide();
+				loginBtn.getScene().getWindow().hide();
 
 				stage.setOnCloseRequest((WindowEvent event1) -> {
 					factory.close();
@@ -77,17 +75,17 @@ public class Controller implements Initializable {
 				e.printStackTrace();
 			}
 		else {
-			String accountName = accountNameField.getText();
-			String accountPassword = passwordField.getText();
 
 			// start a transaction
 
-			User loginResult = (User) session.createQuery("from User s where s.accountName='" + accountName
-					+ "' and s.accountPassword='" + accountPassword + "'").uniqueResult();
+			User loginResult = (User) session.createQuery(
+					"from User s where s.accountName='" + accName + "' and s.accountPassword='" + accPassword + "'")
+					.uniqueResult();
 
 			if (loginResult == null) {
 				System.out.println("No account");
 				label.setVisible(true);
+				session.getTransaction().commit();
 			} else {
 				Singleton.getInstance().setUser(loginResult);
 				System.out.println("There is a account");
@@ -107,9 +105,10 @@ public class Controller implements Initializable {
 						Parent root = FXMLLoader.load(getClass().getResource("OwnerPane.fxml"));
 						Stage stage = new Stage();
 						stage.setScene(new Scene(root));
+						stage.setTitle("Owner Profile");
 						stage.show();
 						// hide login pane
-						loginButton.getScene().getWindow().hide();
+						loginBtn.getScene().getWindow().hide();
 
 						stage.setOnCloseRequest((WindowEvent event1) -> {
 							if (Singleton.getInstance().getUser() != null) {
@@ -142,7 +141,7 @@ public class Controller implements Initializable {
 						stage.show();
 
 						// hide login pane
-						loginButton.getScene().getWindow().hide();
+						loginBtn.getScene().getWindow().hide();
 
 						stage.setOnCloseRequest((WindowEvent event1) -> {
 							if (Singleton.getInstance().getUser() != null) {
@@ -170,4 +169,22 @@ public class Controller implements Initializable {
 		}
 		// session.getTransaction().commit();
 	}
+
+	public void keyPressed(KeyEvent event) {
+
+		/*
+		 * KeyCode key = event.getCode(); if(key == KeyCode.ENTER) {
+		 * accountPassword.requestFocus(); }
+		 */
+		Control[] focusOrder = new Control[] { accountName, accountPassword };
+
+		for (int i = 0; i < focusOrder.length - 1; i++) {
+			Control nextControl = focusOrder[i + 1];
+			focusOrder[i].addEventHandler(ActionEvent.ACTION, e -> nextControl.requestFocus());
+		}
+		if (accountPassword.isFocused()) {
+			loginBtn.setDefaultButton(true);
+		}
+	}
+
 }
