@@ -9,7 +9,15 @@ import java.util.ResourceBundle;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 
+import com.sun.xml.bind.v2.TODO;
+
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,41 +30,123 @@ import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import oop2.storages.Agent;
+import oop2.storages.Category;
 import oop2.storages.Contract;
 import oop2.storages.HibernateUtility;
 import oop2.storages.Owner;
 import oop2.storages.Storage;
+import oop2.storages.StorageType;
 import oop2.storages.User;
 
 public class AgentController implements Initializable {
 
 	SessionFactory factory = HibernateUtility.getSessionFactory();
 
+	ObservableList<Storage> storageList;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		showProfileInfo();
+		showMaintainedStorages();
+		loadCreateContract();
 
-		Session session = factory.getCurrentSession();
+	}
+
+	public void showProfileInfo() {
 		nameText.setText(Singleton.getInstance().getAgent().getUser().getPersonName());
 		accountNameText.setText(Singleton.getInstance().getAgent().getUser().getAccountName());
-		commissionText.setText("" + Singleton.getInstance().getAgent().getCommission() + "");
-		ratingText.setText("" + Singleton.getInstance().getAgent().getRating() + "");
+		commissionText.setText(Singleton.getInstance().getAgent().getCommission().toString());
+		ratingText.setText(Singleton.getInstance().getAgent().getRating().toString());
+	}
+	
+	@FXML
+	TableView<Storage> storageTable;
 
-		List<Storage> storageList = new ArrayList<>();
-		// pozvolqva da se izbere samo skladove sus status 0 - svobodni za otdavane
-		storageList = session.createQuery("from Storage s where id_storage_agent = '"
-				+ Singleton.getInstance().getAgent().getUser().getUserID() + "' and status = 0").list();
+	@FXML
+	TableColumn<Storage, String> storageAddressColumn;
 
-		storageCombo.getItems().clear();
-		storageCombo.getItems().addAll(storageList);
-		maintainedSt.getItems().addAll(storageList);
+	@FXML
+	TableColumn<Storage, String> storageCategoryColumn;
+
+	@FXML
+	TableColumn<Storage, String> storageTypeColumn;
+
+	@FXML
+	TableColumn<Storage, String> storageStatusColumn;
+
+	@FXML
+	TextField searchStorage;
+
+	public void showMaintainedStorages() {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+
+		
+		storageList = FXCollections.observableArrayList(Singleton.getInstance().getAgent().getStorageList());
+
+		// tuka definirash vuv vsqka kolona kakvo ima kato towa v skobite e imeto na
+		// promenlivata ot klasa na obekta
+		storageAddressColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("storageAddress"));
+		storageCategoryColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("category"));
+		storageTypeColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("storageType"));
+		storageStatusColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("storageStatus"));
+
+		storageTable.setItems(storageList);
+
+		FilteredList<Storage> filteredData = new FilteredList<>(storageList, p -> true);
+		searchStorage.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(storage -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+
+				String lowerCaseFilter = newValue.toLowerCase();
+
+				// kazvash koi poleta da tursi s teq if-ove
+				if (storage.getStorageAddress().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (storage.getCategory().getCategoryName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (storage.getStorageType().getTypeName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				}
+				return false;
+			});
+		});
+
+		// setvash tuka namerenite danni v sorted list i go setvash na table-a
+		SortedList<Storage> sortedData = new SortedList<>(filteredData);
+		sortedData.comparatorProperty().bind(storageTable.comparatorProperty());
+		storageTable.setItems(sortedData);
 
 		session.getTransaction().commit();
 	}
+
+	public void loadCreateContract() {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+
+		List<Storage> availableStorages = new ArrayList<>();
+		for (Storage storage : storageList) {
+			if (storage.getStorageStatus() == false)
+				availableStorages.add(storage);
+		}
+		storageCombo.getItems().setAll(availableStorages);
+
+		session.getTransaction().commit();
+	}
+	
+	
 
 	@FXML
 	Button editPrBtn;
@@ -81,6 +171,10 @@ public class AgentController implements Initializable {
 			stage.setScene(new Scene(root));
 			stage.setTitle("Edit Profile");
 			stage.show();
+
+			stage.setOnCloseRequest((WindowEvent event1) -> {
+				showProfileInfo();
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -117,66 +211,36 @@ public class AgentController implements Initializable {
 		LocalDate endDate = dateContract.getValue();
 		Double pricePerMonth = Double.parseDouble(priceContract.getText());
 
-		Contract contract = new Contract(Singleton.getInstance().getAgent(), choosenStorage, null, endDate,
-				pricePerMonth, renterNme, renterPn);
-		Storage tempStorage = choosenStorage;
-		tempStorage.setStorageStatus(true);
-		System.out.println(tempStorage);
-		session.update(tempStorage);
-
-		session.save(contract);
+		if (choosenStorage.getStorageStatus() == false) {
+			Contract contract = new Contract(Singleton.getInstance().getAgent(), choosenStorage, null, endDate,
+					pricePerMonth, renterNme, renterPn);
+			Storage tempStorage = choosenStorage;
+			tempStorage.setStorageStatus(true);
+			System.out.println(tempStorage);
+			session.update(tempStorage);
+			session.save(contract);
+		} else {
+			System.out.println("Storage is already rented");
+		}
 		session.getTransaction().commit();
 	}
-
-	@FXML
-	ListView<Storage> maintainedSt;
 
 	@FXML
 	Button showStBtn;
 
 	@FXML
-	Label ownerText;
+	BorderPane borderMaintSt;
 
-	@FXML
-	Label agentText;
-
-	@FXML
-	Label typeText;
-
-	@FXML
-	Label categoryText;
-
-	@FXML
-	Label addressText;
-
-	@FXML
-	Label sizeText;
-
-	@FXML
-	Label climateText;
-
-	@FXML
-	Label statusText;
-
-	@FXML
-	AnchorPane showStorage;
+	AnchorPane anp = new AnchorPane();
 
 	public void showStorage(ActionEvent event) {
 		try {
-			// да се добави валидация дали е селектирано
-			showStorage.setVisible(true);
-
-			Storage tempStorage = maintainedSt.getSelectionModel().getSelectedItem();
+			Storage tempStorage = storageTable.getSelectionModel().getSelectedItem();
 			Singleton.getInstance().setStorage(tempStorage);
+			anp.getChildren().clear();
+			anp.getChildren().add(FXMLLoader.load(getClass().getResource("StorageInfo.fxml")));
+			borderMaintSt.setRight(anp);
 
-			ownerText.setText(Singleton.getInstance().getStorage().getOwner().getUser().getPersonName());
-			agentText.setText(Singleton.getInstance().getStorage().getAgent().getUser().getPersonName());
-			typeText.setText(Singleton.getInstance().getStorage().getStorageType().getTypeName());
-			categoryText.setText(Singleton.getInstance().getStorage().getCategory().getCategoryName());
-			addressText.setText(Singleton.getInstance().getStorage().getStorageAddress());
-			sizeText.setText("" + Singleton.getInstance().getStorage().getStorageSize() + "");
-			climateText.setText(Singleton.getInstance().getStorage().getClimateConditions());
-			statusText.setText("" + Singleton.getInstance().getStorage().getStorageStatus() + "");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -184,10 +248,7 @@ public class AgentController implements Initializable {
 	}
 
 	@FXML
-	ListView<Contract> activeContracts;
-
-	@FXML
-	Label activeConText;
+	Button activeContrBtn;
 
 	@FXML
 	Button allContrBtn;
@@ -196,45 +257,47 @@ public class AgentController implements Initializable {
 	Button contractInfoBtn;
 
 	@FXML
-	Label allConText;
+	BorderPane borderContracts;
 
-	@FXML
-	Label stDateText;
+	AnchorPane anpCont = new AnchorPane();
 
-	@FXML
-	Label endDateText;
+	AnchorPane anpCont2 = new AnchorPane();
 
-	@FXML
-	ListView<Contract> allContracts;
+	AnchorPane anpCont3 = new AnchorPane();
 
-	@FXML
-	DatePicker startDate;
-
-	@FXML
-	DatePicker endDate;
-
-	public void showContracts(ActionEvent event) {
-		activeContracts.setVisible(false);
-		activeConText.setVisible(false);
-		allConText.setVisible(true);
-		stDateText.setVisible(true);
-		endDateText.setVisible(true);
-		allContracts.setVisible(true);
-		startDate.setVisible(true);
-		endDate.setVisible(true);
-	}
-
-	public void showContractInfo(ActionEvent event) {
+	public void showActiveContracts(ActionEvent event) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("ContractInfo.fxml"));
-			Stage stage = new Stage();
-			stage.setScene(new Scene(root));
-			stage.setTitle("Contract Info");
-			stage.show();
+			anpCont.getChildren().clear();
+			anpCont.getChildren().add(FXMLLoader.load(getClass().getResource("ActiveContracts.fxml")));
+			borderContracts.setRight(anpCont);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void showContractInfo(ActionEvent event) {
+		try {
+			anpCont2.getChildren().clear();
+			anpCont2.getChildren().add(FXMLLoader.load(getClass().getResource("ContractInfo.fxml")));
+			borderContracts.setRight(anpCont2);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void showAllContracts(ActionEvent event) {
+		try {
+			anpCont3.getChildren().clear();
+			anpCont3.getChildren().add(FXMLLoader.load(getClass().getResource("AllContracts.fxml")));
+			borderContracts.setRight(anpCont3);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void keyPressed(KeyEvent event) {

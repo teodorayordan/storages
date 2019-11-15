@@ -27,14 +27,14 @@
          <children>
             <Label text="New Name" GridPane.columnIndex="1" />
             <Label text="New Password" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="newName" editable="false" onKeyPressed="#keyPressed" GridPane.columnIndex="2" />
-            <PasswordField fx:id="newPassword" editable="false" onKeyPressed="#keyPressed" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <TextField fx:id="newName" editable="false" GridPane.columnIndex="2" />
+            <PasswordField fx:id="newPassword" editable="false" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Button fx:id="editPrBtn" mnemonicParsing="false" onAction="#editProfile" prefHeight="43.0" prefWidth="95.0" text="Edit Profile" GridPane.columnIndex="2" GridPane.rowIndex="3" />
             <Label fx:id="labelCommission" text="Commission" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="newCommission" editable="false" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <CheckBox fx:id="nameCheck" mnemonicParsing="false" />
-            <CheckBox fx:id="passwordCheck" mnemonicParsing="false" GridPane.rowIndex="1" />
-            <CheckBox fx:id="commissionCheck" mnemonicParsing="false" visible="false" GridPane.rowIndex="2" />
+            <CheckBox fx:id="nameCheck" mnemonicParsing="false" onAction="#enableEdit" />
+            <CheckBox fx:id="passwordCheck" mnemonicParsing="false" onAction="#enableEdit" GridPane.rowIndex="1" />
+            <CheckBox fx:id="commissionCheck" mnemonicParsing="false" onAction="#enableEdit" visible="false" GridPane.rowIndex="2" />
          </children>
       </GridPane>
    </children>

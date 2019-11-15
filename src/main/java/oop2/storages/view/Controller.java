@@ -1,6 +1,9 @@
 package oop2.storages.view;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -20,15 +23,33 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import oop2.storages.Agent;
+import oop2.storages.Contract;
 import oop2.storages.HibernateUtility;
 import oop2.storages.Owner;
+import oop2.storages.Storage;
 import oop2.storages.User;
 
 public class Controller implements Initializable {
 
+	SessionFactory factory = HibernateUtility.getSessionFactory();
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// TODO Auto-generated method stub
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+		/*List<Storage> checkEndDateStorage = new ArrayList<>();
+		checkEndDateStorage = session.createQuery("from Storage s where s.").list();*/
+		List<Contract> checkEndDateContract = new ArrayList<>();
+		checkEndDateContract = session.createQuery("from Contract s where s.endDate < '"+ LocalDate.now() +"'").list();
+		System.out.println(checkEndDateContract);
+		for (Contract contract : checkEndDateContract) {
+			Storage tempStorage = contract.getStorage();
+			contract.getStorage().setStorageStatus(false);
+			session.update(tempStorage);
+		}
+		
+		
+		session.getTransaction().commit();
 
 	}
 
@@ -47,7 +68,6 @@ public class Controller implements Initializable {
 	@FXML
 	public void login(ActionEvent event) {
 		// create session factory
-		SessionFactory factory = HibernateUtility.getSessionFactory();
 
 		// create session
 		Session session = factory.getCurrentSession();
@@ -55,7 +75,8 @@ public class Controller implements Initializable {
 		String accName = accountName.getText();
 		String accPassword = accountPassword.getText();
 
-		if (accName.equals("admin") && accPassword.equals("admin"))
+		if (accName.equals("admin") && accPassword.equals("admin")) {
+			session.getTransaction().commit();
 			try {
 				Parent root = FXMLLoader.load(getClass().getResource("AdminPane.fxml"));
 				Stage stage = new Stage();
@@ -74,10 +95,8 @@ public class Controller implements Initializable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
 		else {
-
-			// start a transaction
-
 			User loginResult = (User) session.createQuery(
 					"from User s where s.accountName='" + accName + "' and s.accountPassword='" + accPassword + "'")
 					.uniqueResult();
@@ -90,7 +109,6 @@ public class Controller implements Initializable {
 				Singleton.getInstance().setUser(loginResult);
 				System.out.println("There is a account");
 
-				// Proverka koe ot dvete e, ednoto shte e null
 				Owner owner = session.get(Owner.class, loginResult.getUserID());
 				Agent agent = session.get(Agent.class, loginResult.getUserID());
 
@@ -100,7 +118,7 @@ public class Controller implements Initializable {
 					Singleton.getInstance().setOwner(owner);
 					Singleton.getInstance().getUser().setStatusLogin(true); // setvame che e lognat
 					session.update(Singleton.getInstance().getUser());
-
+					session.getTransaction().commit();
 					try {
 						Parent root = FXMLLoader.load(getClass().getResource("OwnerPane.fxml"));
 						Stage stage = new Stage();
@@ -133,11 +151,12 @@ public class Controller implements Initializable {
 					Singleton.getInstance().setAgent(agent);
 					Singleton.getInstance().getUser().setStatusLogin(true);
 					session.update(Singleton.getInstance().getUser());
-
+					session.getTransaction().commit();
 					try {
 						Parent root = FXMLLoader.load(getClass().getResource("AgentPane.fxml"));
 						Stage stage = new Stage();
 						stage.setScene(new Scene(root));
+						stage.setTitle("Agent Profile");
 						stage.show();
 
 						// hide login pane

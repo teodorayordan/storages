@@ -4,10 +4,12 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -15,15 +17,15 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="oop2.storages.view.AgentController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="670.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="oop2.storages.view.AgentController">
    <children>
-      <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="460.0" prefWidth="670.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Profile Info">
                <content>
                   <BorderPane prefHeight="371.0" prefWidth="631.0">
                      <right>
-                        <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+                        <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="431.0" prefWidth="195.0" BorderPane.alignment="CENTER">
                           <items>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="181.0" prefWidth="168.0" />
@@ -31,9 +33,9 @@
                         </SplitPane>
                      </right>
                      <left>
-                        <AnchorPane prefHeight="38.0" prefWidth="28.0" BorderPane.alignment="CENTER">
+                        <AnchorPane prefHeight="431.0" prefWidth="475.0" BorderPane.alignment="CENTER">
                            <children>
-                              <GridPane alignment="CENTER" layoutX="76.0" layoutY="41.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="290.0" prefWidth="336.0">
+                              <GridPane alignment="CENTER" layoutX="70.0" layoutY="71.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="290.0" prefWidth="336.0">
                                 <columnConstraints>
                                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                   <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -67,7 +69,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <GridPane alignment="CENTER" layoutX="109.0" prefHeight="295.0" prefWidth="396.0" AnchorPane.bottomAnchor="43.0" AnchorPane.leftAnchor="109.0">
+                        <GridPane alignment="CENTER" layoutX="104.0" layoutY="42.0" prefHeight="347.0" prefWidth="463.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="104.0">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="199.0" minWidth="10.0" prefWidth="199.0" />
                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="198.0" minWidth="10.0" prefWidth="197.0" />
@@ -82,7 +84,7 @@
                               <RowConstraints maxHeight="137.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <ComboBox fx:id="storageCombo" onKeyPressed="#keyPressed" prefHeight="25.0" prefWidth="201.0" GridPane.columnIndex="1" />
+                              <ComboBox fx:id="storageCombo" editable="true" onKeyPressed="#keyPressed" prefHeight="25.0" prefWidth="201.0" GridPane.columnIndex="1" />
                               <Label alignment="CENTER" text="Choose Storage" />
                               <TextField fx:id="renterName" onKeyPressed="#keyPressed" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <Label text="Renter Name" GridPane.rowIndex="1" />
@@ -102,102 +104,71 @@
           </Tab>
             <Tab text="Maintained Storages">
                <content>
-                  <BorderPane prefHeight="200.0" prefWidth="200.0">
+                  <BorderPane fx:id="borderMaintSt" prefHeight="200.0" prefWidth="200.0">
                      <left>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="371.0" prefWidth="336.0" BorderPane.alignment="CENTER">
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="431.0" prefWidth="373.0" BorderPane.alignment="CENTER">
                            <children>
-                                <GridPane layoutX="64.0" layoutY="33.0" prefHeight="305.0" prefWidth="239.0">
+                                <GridPane layoutX="14.0" layoutY="31.0" prefHeight="370.0" prefWidth="343.0">
                                 <columnConstraints>
-                                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="240.0" minWidth="10.0" prefWidth="235.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="240.0" minWidth="10.0" prefWidth="95.0" />
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="240.0" minWidth="10.0" prefWidth="132.0" />
+                                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="240.0" minWidth="10.0" prefWidth="132.0" />
                                 </columnConstraints>
                                 <rowConstraints>
-                                  <RowConstraints maxHeight="293.0" minHeight="10.0" prefHeight="267.0" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="293.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="293.0" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="293.0" minHeight="10.0" prefHeight="45.0" vgrow="SOMETIMES" />
+                                  <RowConstraints maxHeight="293.0" minHeight="10.0" prefHeight="245.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="293.0" minHeight="10.0" prefHeight="38.0" valignment="CENTER" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <ListView fx:id="maintainedSt" prefHeight="124.0" prefWidth="239.0" />
-                                    <Button fx:id="showStBtn" mnemonicParsing="false" onAction="#showStorage" text="Show Storage" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
+                                    <Label text="Search Storage" GridPane.rowIndex="1" />
+                                    <TextField fx:id="searchStorage" prefHeight="25.0" prefWidth="265.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                                    <DatePicker prefHeight="25.0" prefWidth="125.0" GridPane.columnIndex="1" />
+                                    <DatePicker prefHeight="25.0" prefWidth="125.0" GridPane.columnIndex="2" />
+                                    <Label text="Select Date" />
+                                    <Button mnemonicParsing="false" text="Available Storages" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
+                                    <Button fx:id="showStBtn" mnemonicParsing="false" onAction="#showStorage" text="Storage Info" GridPane.columnIndex="2" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
+                                    <TableView fx:id="storageTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                                      <columns>
+                                        <TableColumn fx:id="storageAddressColumn" prefWidth="75.0" text="Address" />
+                                        <TableColumn fx:id="storageCategoryColumn" prefWidth="45.0" text="Category" />
+                                          <TableColumn fx:id="storageTypeColumn" prefWidth="49.0" text="Type" />
+                                          <TableColumn fx:id="storageStatusColumn" prefWidth="70.0" text="Status" />
+                                      </columns>
+                                    </TableView>
                                  </children>
                               </GridPane>
+                              <Separator layoutX="370.0" orientation="VERTICAL" prefHeight="431.0" prefWidth="3.0" />
                            </children>
                         </AnchorPane>
                      </left>
-                     <right>
-                        <SplitPane orientation="VERTICAL" prefHeight="371.0" prefWidth="264.0" BorderPane.alignment="CENTER">
-                          <items>
-                              <AnchorPane fx:id="showStorage" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="370.0" prefWidth="262.0" visible="false">
-                                 <children>
-                                    <GridPane layoutX="12.0" layoutY="22.0" prefHeight="313.0" prefWidth="239.0">
-                                       <columnConstraints>
-                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="248.0" minWidth="10.0" prefWidth="126.0" />
-                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="212.0" minWidth="10.0" prefWidth="113.0" />
-                                       </columnConstraints>
-                                       <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                       </rowConstraints>
-                                       <children>
-                                          <Label text="Owner" />
-                                          <Label text="Agent" GridPane.rowIndex="1" />
-                                          <Label text="Category" GridPane.rowIndex="3" />
-                                          <Label text="Address" GridPane.rowIndex="4" />
-                                          <Label text="Size" GridPane.rowIndex="5" />
-                                          <Label GridPane.rowIndex="6" />
-                                          <Label fx:id="agentText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                          <Label fx:id="typeText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <Label fx:id="categoryText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                          <Label fx:id="addressText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                          <Label fx:id="sizeText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                                          <Label text="Climate Conditions" GridPane.rowIndex="6" />
-                                          <Label text="Status" GridPane.rowIndex="7" />
-                                          <Label text="Type" GridPane.rowIndex="2" />
-                                          <Label fx:id="ownerText" text="Label" GridPane.columnIndex="1" />
-                                          <Label fx:id="climateText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                                          <Label fx:id="statusText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                                       </children>
-                                    </GridPane>
-                                 </children>
-                              </AnchorPane>
-                          </items>
-                        </SplitPane>
-                     </right>
                   </BorderPane>
                </content>
             </Tab>
             <Tab text="My Contracts">
                <content>
-                  <BorderPane prefHeight="370.0" prefWidth="600.0">
-                     <right>
-                        <AnchorPane prefHeight="258.0" prefWidth="440.0" BorderPane.alignment="CENTER">
+                  <BorderPane fx:id="borderContracts" prefHeight="531.0" prefWidth="669.0">
+                     <left>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                            <children>
-                              <Label fx:id="activeConText" layoutX="177.0" layoutY="31.0" text="Active Contracts" />
-                              <ListView fx:id="activeContracts" layoutX="104.0" layoutY="71.0" prefHeight="258.0" prefWidth="236.0" />
-                              <ListView fx:id="allContracts" layoutX="183.0" layoutY="71.0" prefHeight="258.0" prefWidth="230.0" visible="false" />
-                              <Label fx:id="allConText" layoutX="264.0" layoutY="31.0" text="All Contracts" visible="false" />
-                              <DatePicker fx:id="startDate" layoutX="18.0" layoutY="148.0" prefHeight="25.0" prefWidth="150.0" visible="false" />
-                              <Label fx:id="stDateText" layoutX="19.0" layoutY="114.0" text="Enter Start Date:" visible="false" />
-                              <Label fx:id="endDateText" layoutX="18.0" layoutY="198.0" text="Enter End Date:" visible="false" />
-                              <DatePicker fx:id="endDate" layoutX="18.0" layoutY="232.0" prefHeight="25.0" prefWidth="150.0" visible="false" />
+                              <Separator layoutX="194.0" orientation="VERTICAL" prefHeight="431.0" prefWidth="0.0" />
+                              <GridPane layoutX="25.0" layoutY="139.0" prefHeight="153.0" prefWidth="151.0">
+                                <columnConstraints>
+                                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Button fx:id="contractInfoBtn" mnemonicParsing="false" onAction="#showContractInfo" prefHeight="25.0" prefWidth="135.0" text="Show Contract Info" GridPane.rowIndex="1" />
+                                    <Button fx:id="allContrBtn" mnemonicParsing="false" onAction="#showAllContracts" prefHeight="25.0" prefWidth="135.0" text="Show All Contracts" GridPane.rowIndex="2" />
+                                    <Button fx:id="activeContrBtn" mnemonicParsing="false" onAction="#showActiveContracts" text="Show Active Contracts" />
+                                 </children>
+                              </GridPane>
                            </children>
                         </AnchorPane>
-                     </right>
-                     <left>
-                        <SplitPane orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
-                           <items>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="369.0" prefWidth="155.0">
-                                 <children>
-                                    <Button fx:id="contractInfoBtn" layoutX="22.0" layoutY="124.0" mnemonicParsing="false" onAction="#showContractInfo" prefHeight="25.0" prefWidth="115.0" text="Contract Info" />
-                                    <Button fx:id="allContrBtn" layoutX="22.0" layoutY="185.0" mnemonicParsing="false" onAction="#showContracts" text="Show All Contracts" />
-                                 </children>
-                              </AnchorPane>
-                           </items>
-                        </SplitPane>
                      </left>
                   </BorderPane>
                </content>

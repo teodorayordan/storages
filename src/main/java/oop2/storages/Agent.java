@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.util.*;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -35,7 +37,7 @@ public class Agent implements Serializable {
 	@Column(name = "rating")
 	private Double rating = null;
 
-	@OneToMany(mappedBy = "agent")
+	@ManyToMany(mappedBy = "agentList", fetch = FetchType.EAGER)
 	private List<Storage> storageList;
 
 	@Override
@@ -74,7 +76,6 @@ public class Agent implements Serializable {
 		return commission;
 	}
 
-	
 	public void setCommission(Double commission) {
 		this.commission = commission;
 	}
@@ -94,7 +95,5 @@ public class Agent implements Serializable {
 	public void setStorageList(List<Storage> storageList) {
 		this.storageList = storageList;
 	}
-	
-	
 
 }

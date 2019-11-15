@@ -22,6 +22,10 @@ import oop2.storages.User;
 
 public class EditProfileController implements Initializable {
 
+	SessionFactory factory = HibernateUtility.getSessionFactory();
+
+	Session session = factory.getCurrentSession();
+	
 	@FXML
 	Button editPrBtn;
 
@@ -46,11 +50,6 @@ public class EditProfileController implements Initializable {
 	@FXML
 	CheckBox commissionCheck;
 
-	SessionFactory factory = HibernateUtility.getSessionFactory();
-
-	// create session
-	Session session = factory.getCurrentSession();
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		Agent agent = Singleton.getInstance().getAgent();
@@ -59,63 +58,62 @@ public class EditProfileController implements Initializable {
 			newCommission.setVisible(true);
 			commissionCheck.setVisible(true);
 		}
+	}
 
+	public void enableEdit() {
+		if (nameCheck.isSelected()) {
+			newName.setEditable(true);
+		} else {
+			newName.setEditable(false);
+		}
+		
+		if (passwordCheck.isSelected()) {
+			newPassword.setEditable(true);
+		} else {
+			newPassword.setEditable(false);
+		}
+		
+		if (commissionCheck.isSelected()) {
+			newCommission.setEditable(true);
+		} else {
+			newCommission.setEditable(false);
+		}
 	}
 
 	public void editProfile(ActionEvent event) {
 		User user = Singleton.getInstance().getUser();
-		newName.setEditable(false);
-		newPassword.setEditable(false);
-		newCommission.setEditable(false);
 
-		if (nameCheck.selectedProperty() != null) {
-			newName.setEditable(true);
-			user.setPersonName(newName.getText());
-		}
-		if (passwordCheck.selectedProperty() != null) {
-			newPassword.setEditable(true);
-			user.setAccountPassword(newPassword.getText());
+		if (nameCheck.isSelected()) {
+			if (!newName.getText().isEmpty()) {
+				user.setPersonName(newName.getText());
+			} else
+				System.out.println("Empty fields");
+		} else if (passwordCheck.isSelected()) {
+
+			if (!newPassword.getText().isEmpty()) {
+				user.setAccountPassword(newPassword.getText());
+			} else
+				System.out.println("Empty fields");
 		}
 
 		session.beginTransaction();
 
 		if (newCommission.isVisible()) {
 			Agent agent = Singleton.getInstance().getAgent();
-			if (commissionCheck.selectedProperty() != null) {
-				newCommission.setEditable(true);
-				agent.setCommission(Double.parseDouble(newCommission.getText()));
-				session.update(user);
-				System.out.println(agent);
-				session.update(agent);
-			}
-		} else
-			System.out.println(user);
-
-		// commit transaction
-		session.getTransaction().commit();
-
-	}
-
-	public void keyPressed(KeyEvent event) {
-
-		// да добавя още един - с if се проверява дали съдържа комисионна, че не работи
-		// иначе
-		if (newCommission.isVisible()) {
-			Control[] focusOrder = new Control[] { newName, newPassword, newCommission, editPrBtn };
-
-			for (int i = 0; i < focusOrder.length - 1; i++) {
-				Control nextControl = focusOrder[i + 1];
-				focusOrder[i].addEventHandler(ActionEvent.ACTION, e -> nextControl.requestFocus());
+			if (commissionCheck.isSelected()) {
+				if (!newCommission.getText().isEmpty()) {
+					agent.setCommission(Double.parseDouble(newCommission.getText()));
+					session.update(user);
+					System.out.println(agent);
+					session.update(agent);
+				} else
+					System.out.println("Empty fields");
 			}
 		} else {
-			Control[] focusOrder = new Control[] { newName, newPassword, editPrBtn };
-
-			for (int i = 0; i < focusOrder.length - 1; i++) {
-				Control nextControl = focusOrder[i + 1];
-				focusOrder[i].addEventHandler(ActionEvent.ACTION, e -> nextControl.requestFocus());
-			}
+			System.out.println(user);
+			session.update(user);
 		}
 
+		session.getTransaction().commit();
 	}
-
 }

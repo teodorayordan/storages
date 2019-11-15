@@ -8,8 +8,13 @@ import java.util.ResourceBundle;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,9 +27,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import oop2.storages.Agent;
@@ -39,38 +49,106 @@ public class OwnerController implements Initializable {
 
 	SessionFactory factory = HibernateUtility.getSessionFactory();
 
-	List<Agent> agentList = new ArrayList<>();
-	List<StorageType> typeList = new ArrayList<>();
-	List<Category> categoryList = new ArrayList<>();
-	List<Storage> storageList = new ArrayList<>();
+	ObservableList<Agent> agentList;
+	ObservableList<StorageType> typeList;
+	ObservableList<Category> categoryList;
+	ObservableList<Storage> storageList;
+
+	// definirat se id na tablica i id na kolonite i
+	@FXML
+	TableView<Storage> storageTable;
+
+	@FXML
+	TableColumn<Storage, String> storageAddressColumn;
+
+	@FXML
+	TableColumn<Storage, String> storageCategoryColumn;
+
+	@FXML
+	TableColumn<Storage, String> storageTypeColumn;
+
+	@FXML
+	TableColumn<Storage, String> storageStatusColumn;
+
+	@FXML
+	TextField searchStorage;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// session.beginTransaction();
-		Session session = factory.getCurrentSession();
+		showProfileInfo();
+		showOwnedStorages();
+		loadCreateStorage();
+	}
+
+	public void showProfileInfo() {
 		nameText.setText(Singleton.getInstance().getOwner().getUser().getPersonName());
 		accountNameText.setText(Singleton.getInstance().getOwner().getUser().getAccountName());
+	}
 
-		agentList = session.createQuery("from Agent s").list();
+	public void showOwnedStorages() {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
 
-		categoryList = session.createQuery("from Category s").list();
-
-		typeList = session.createQuery("from StorageType s").list();
-
-		storageList = session.createQuery(
+		List<Storage> query = session.createQuery(
 				"from Storage s where id_owner = '" + Singleton.getInstance().getOwner().getUser().getUserID() + "'")
 				.list();
+		storageList = FXCollections.observableArrayList(query);
+
+		// tuka definirash vuv vsqka kolona kakvo ima kato towa v skobite e imeto na
+		// promenlivata ot klasa na obekta
+		storageAddressColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("storageAddress"));
+		storageCategoryColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("category"));
+		storageTypeColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("storageType"));
+		storageStatusColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("storageStatus"));
+
+		storageTable.setItems(storageList);
+
+		FilteredList<Storage> filteredData = new FilteredList<>(storageList, p -> true);
+		searchStorage.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(storage -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+
+				String lowerCaseFilter = newValue.toLowerCase();
+
+				// kazvash koi poleta da tursi s teq if-ove
+				if (storage.getStorageAddress().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (storage.getCategory().getCategoryName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (storage.getStorageType().getTypeName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				}
+				return false;
+			});
+		});
+
+		// setvash tuka namerenite danni v sorted list i go setvash na table-a
+		SortedList<Storage> sortedData = new SortedList<>(filteredData);
+		sortedData.comparatorProperty().bind(storageTable.comparatorProperty());
+		storageTable.setItems(sortedData);
 
 		session.getTransaction().commit();
+	}
 
-		comboAgent.getItems().clear();
-		comboAgent.getItems().addAll(agentList);
-		comboType.getItems().clear();
-		comboType.getItems().addAll(typeList);
-		comboCategory.getItems().clear();
-		comboCategory.getItems().addAll(categoryList);
-		ownedStorages.getItems().addAll(storageList);
+	public void loadCreateStorage() {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
 
+		Query<Agent> agentQuery = session.createQuery("from Agent s ");
+		agentList = FXCollections.observableArrayList(agentQuery.list());
+		comboAgent.getItems().setAll(agentList);
+
+		Query<StorageType> typeQuery = session.createQuery("from StorageType s ");
+		typeList = FXCollections.observableArrayList(typeQuery.list());
+		comboType.getItems().setAll(typeList);
+
+		Query<Category> categoryQuery = session.createQuery("from Category s ");
+		categoryList = FXCollections.observableArrayList(categoryQuery.list());
+		comboCategory.getItems().setAll(categoryList);
+
+		session.getTransaction().commit();
 	}
 
 	@FXML
@@ -82,19 +160,17 @@ public class OwnerController implements Initializable {
 	@FXML
 	Label accountNameText;
 
-	@FXML
-	AnchorPane anchorPane;
-
 	public void editProfile(ActionEvent event) {
 
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("EditProfile.fxml"));
 			Stage stage = new Stage();
 			stage.setScene(new Scene(root));
-			stage.showAndWait();
+			stage.setTitle("Edit Profile");
+			stage.show();
 
 			stage.setOnCloseRequest((WindowEvent event1) -> {
-				// kod da update profilnata stranica
+				showProfileInfo();
 			});
 
 		} catch (Exception e) {
@@ -128,16 +204,20 @@ public class OwnerController implements Initializable {
 		Session session = factory.getCurrentSession();
 		Owner owner = Singleton.getInstance().getOwner();
 		Agent chosenAgent = (Agent) comboAgent.getValue();
+		List<Agent> agentList = new ArrayList<>();
+		agentList.add(chosenAgent);
 		StorageType chosenType = (StorageType) comboType.getValue();
 		Category chosenCategory = (Category) comboCategory.getValue();
-		String storageAdr = storageAddress.getText();
+		String storageAdr = storageAddressColumn.getText();
 		String climateConditions = stClmConditions.getText();
 		Double storageSze = Double.parseDouble(storageSize.getText().toString());
 
-		Storage tempStorage = new Storage(owner, chosenAgent, chosenType, chosenCategory, storageSze, climateConditions,
-				storageAdr, false);
+		Storage tempStorage = new Storage(owner, chosenType, chosenCategory, storageSze, climateConditions, storageAdr,
+				agentList);
 
 		System.out.println(tempStorage);
+
+		storageList.add(tempStorage);
 
 		// start a transaction
 		session.beginTransaction();
@@ -150,53 +230,26 @@ public class OwnerController implements Initializable {
 	}
 
 	@FXML
-	ListView<Storage> ownedStorages;
-
-	@FXML
 	Button showStBtn;
 
 	@FXML
-	Label ownerText;
+	BorderPane borderOwnedSt;
 
-	@FXML
-	Label agentText;
+	AnchorPane anp = new AnchorPane();
 
-	@FXML
-	Label typeText;
+	AnchorPane anp2 = new AnchorPane();
 
-	@FXML
-	Label categoryText;
+	SplitPane spl = new SplitPane();
 
-	@FXML
-	Label addressText;
-
-	@FXML
-	Label sizeText;
-
-	@FXML
-	Label climateText;
-
-	@FXML
-	Label statusText;
-
-	@FXML
-	AnchorPane showStorage;
+	SplitPane spl2 = new SplitPane();
 
 	public void showStorage(ActionEvent event) {
 		try {
-			// да се добави валидация дали е селектирано
-			showStorage.setVisible(true);
-			Storage tempStorage = ownedStorages.getSelectionModel().getSelectedItem();
+			Storage tempStorage = storageTable.getSelectionModel().getSelectedItem();
 			Singleton.getInstance().setStorage(tempStorage);
-
-			ownerText.setText(Singleton.getInstance().getStorage().getOwner().getUser().getPersonName());
-			agentText.setText(Singleton.getInstance().getStorage().getAgent().getUser().getPersonName());
-			typeText.setText(Singleton.getInstance().getStorage().getStorageType().getTypeName());
-			categoryText.setText(Singleton.getInstance().getStorage().getCategory().getCategoryName());
-			addressText.setText(Singleton.getInstance().getStorage().getStorageAddress());
-			sizeText.setText("" + Singleton.getInstance().getStorage().getStorageSize() + "");
-			climateText.setText(Singleton.getInstance().getStorage().getClimateConditions());
-			statusText.setText("" + Singleton.getInstance().getStorage().getStorageStatus() + "");
+			anp.getChildren().clear();
+			anp.getChildren().add(FXMLLoader.load(getClass().getResource("StorageInfo.fxml")));
+			borderOwnedSt.setRight(anp);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -209,11 +262,11 @@ public class OwnerController implements Initializable {
 
 	public void editStorage(ActionEvent event) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("EditStorage.fxml"));
-			Stage stage = new Stage();
-			stage.setScene(new Scene(root));
-			stage.setTitle("Edit Storage");
-			stage.show();
+			Storage tempStorage = storageTable.getSelectionModel().getSelectedItem();
+			Singleton.getInstance().setStorage(tempStorage);
+			anp2.getChildren().clear();
+			anp2.getChildren().add(FXMLLoader.load(getClass().getResource("EditStorage.fxml")));
+			borderOwnedSt.setRight(anp2);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -222,10 +275,6 @@ public class OwnerController implements Initializable {
 	}
 
 	public void keyPressed(KeyEvent event) {
-		/*
-		 * KeyCode key = event.getCode(); if(key == KeyCode.ENTER) {
-		 * stClmConditions.requestFocus(); }
-		 */
 
 		Control[] focusOrder = new Control[] { comboAgent, comboType, comboCategory, storageAddress, stClmConditions,
 				storageSize, crStorageBtn };
