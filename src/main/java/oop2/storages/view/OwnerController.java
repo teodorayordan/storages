@@ -1,6 +1,7 @@
 package oop2.storages.view;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -25,6 +26,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
@@ -255,6 +257,45 @@ public class OwnerController implements Initializable {
 			e.printStackTrace();
 		}
 
+	}
+	
+	@FXML
+	DatePicker startDate;
+	
+	@FXML
+	DatePicker endDate;
+	
+	public void showAvailableStorages() {
+		// TODO da se proveri dali raboti pravilno; update: da se pravqt oshte testove, TODO2 da se dobavi filtur
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+
+		LocalDate sDate = startDate.getValue();
+		LocalDate eDate = endDate.getValue();
+
+		if (sDate != null && eDate != null) {
+			System.out.println(sDate);
+			System.out.println(eDate);
+
+			List<Storage> query = session.createQuery("select s.storage from Contract s where (s.startDate not between '"+ sDate +"' and '"+ eDate +"') and "
+					+ "(s.endDate not between '"+ sDate +"' and '"+ eDate +"')").list();
+
+			List<Storage> noContractStorages = session.createQuery("from Storage s where s.storageID not in (select c.storage from Contract c) and "
+					+ "(s.owner = '"+ Singleton.getInstance().getOwner().getOwnerID() +"')").list();
+			
+			for (Storage storage : query) {
+				if(storage.getOwner() == Singleton.getInstance().getOwner()) {
+					noContractStorages.add(storage);
+				}
+			}
+
+			ObservableList<Storage> dateStorageList = FXCollections.observableArrayList(noContractStorages);
+			System.out.println(dateStorageList);
+			storageTable.setItems(dateStorageList);
+		} else
+			storageTable.setItems(storageList);
+
+		session.getTransaction().commit();
 	}
 
 	@FXML

@@ -3,6 +3,7 @@ package oop2.storages.view;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,52 +23,60 @@ import oop2.storages.Agent;
 import oop2.storages.HibernateUtility;
 import oop2.storages.Storage;
 
-public class EditStorageController implements Initializable{
+public class EditStorageController implements Initializable {
 	SessionFactory factory = HibernateUtility.getSessionFactory();
-	
-	ObservableList<Agent> allAgentList;
-	ObservableList<Agent> currentAgentList;	
 
-	
+	ObservableList<Agent> allAgentList;
+	ObservableList<Agent> currentAgentList;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		showAllAgents();
 		showCurrentAgents();
+		
 	}
-	
+
 	public void showAllAgents() {
-		//TODO v nachaloto ne premahva tekushti agenti sushto ne izobrazqva imena
+		// TODO v nachaloto ne premahva tekushti agenti sushto ne izobrazqva imena
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
-		List<Agent> query = session.createQuery(
-				"from Agent s")
-				.list();
+		List<Agent> query = session.createQuery("from Agent s").list();
+		List<Agent> buf = Singleton.getInstance().getStorage().getAgentList();
+		for (Agent agent : buf) {
+			System.out.println(agent);
+			if(query.contains(agent))
+				System.out.println("ahahahahaha");
+			else
+				System.out.println("fuck you java");
+		}
+		query.removeAll(buf);
 		allAgentList = FXCollections.observableArrayList(query);
-		allAgentList.removeAll(Singleton.getInstance().getStorage().getAgentList());
 		
 
-		//allNameColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("user.getPersonName()"));
+		// allNameColumn.setCellValueFactory(new PropertyValueFactory<Agent,
+		// String>("user.getPersonName()"));
 		allCommissionColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("commission"));
 		allRatingColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("rating"));
 
 		allAgentsTable.setItems(allAgentList);
-		
+
 		session.getTransaction().commit();
 	}
-	
+
 	public void showCurrentAgents() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
-		
+
 		currentAgentList = FXCollections.observableArrayList(Singleton.getInstance().getStorage().getAgentList());
-		
-		//currentNameColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("user.getPersonName()"));
+
+		//allAgentList.removeAll(currentAgentList);
+		currentNameColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("user"));
 		currentCommissionColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("commission"));
 		currentRatingColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("rating"));
 
 		currentAgentsTable.setItems(currentAgentList);
-		
+
 		session.getTransaction().commit();
 	}
 
@@ -100,7 +109,6 @@ public class EditStorageController implements Initializable{
 
 	@FXML
 	TableColumn<Agent, String> allRatingColumn;
-	
 
 	public void removeAgent() {
 		Session session = factory.getCurrentSession();
@@ -109,10 +117,10 @@ public class EditStorageController implements Initializable{
 		Singleton.getInstance().getStorage().removeAgent(agent);
 		Storage tempStorage = Singleton.getInstance().getStorage();
 		session.update(tempStorage);
-		
+
 		currentAgentList.remove(agent);
 		allAgentList.add(agent);
-		
+
 		session.getTransaction().commit();
 	}
 
@@ -123,10 +131,10 @@ public class EditStorageController implements Initializable{
 		Singleton.getInstance().getStorage().addAgent(agent);
 		Storage tempStorage = Singleton.getInstance().getStorage();
 		session.update(tempStorage);
-		
+
 		currentAgentList.add(agent);
 		allAgentList.remove(agent);
-		
+
 		session.getTransaction().commit();
 	}
 
@@ -142,6 +150,5 @@ public class EditStorageController implements Initializable{
 		 */
 
 	}
-
 
 }

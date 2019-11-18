@@ -1,6 +1,7 @@
 package oop2.storages.view;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -59,8 +60,9 @@ public class ActiveContractsController implements Initializable {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
-		List<Contract> query = session.createQuery("from Contract s where id_storage_agent = '"
-				+ Singleton.getInstance().getAgent().getUser().getUserID() + "'").list();
+		List<Contract> query = session.createQuery("from Contract s where "
+				+ "s.agent = '"
+				+ Singleton.getInstance().getAgent().getUser().getUserID() + "' and s.endDate >= '"+  LocalDate.now() +"'").list();
 		contractList = FXCollections.observableArrayList(query);
 
 		// tuka definirash vuv vsqka kolona kakvo ima kato towa v skobite e imeto na

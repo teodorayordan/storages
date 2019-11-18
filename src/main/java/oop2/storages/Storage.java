@@ -93,6 +93,33 @@ public class Storage {
 
 	}
 
+	
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((storageID == null) ? 0 : storageID.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Storage other = (Storage) obj;
+		if (storageID == null) {
+			if (other.storageID != null)
+				return false;
+		} else if (!storageID.equals(other.storageID))
+			return false;
+		return true;
+	}
+
 	public Integer getStorageID() {
 		return storageID;
 	}

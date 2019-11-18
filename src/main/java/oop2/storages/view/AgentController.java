@@ -68,7 +68,7 @@ public class AgentController implements Initializable {
 		commissionText.setText(Singleton.getInstance().getAgent().getCommission().toString());
 		ratingText.setText(Singleton.getInstance().getAgent().getRating().toString());
 	}
-	
+
 	@FXML
 	TableView<Storage> storageTable;
 
@@ -91,11 +91,8 @@ public class AgentController implements Initializable {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
-		
 		storageList = FXCollections.observableArrayList(Singleton.getInstance().getAgent().getStorageList());
 
-		// tuka definirash vuv vsqka kolona kakvo ima kato towa v skobite e imeto na
-		// promenlivata ot klasa na obekta
 		storageAddressColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("storageAddress"));
 		storageCategoryColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("category"));
 		storageTypeColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("storageType"));
@@ -112,7 +109,6 @@ public class AgentController implements Initializable {
 
 				String lowerCaseFilter = newValue.toLowerCase();
 
-				// kazvash koi poleta da tursi s teq if-ove
 				if (storage.getStorageAddress().toLowerCase().contains(lowerCaseFilter)) {
 					return true;
 				} else if (storage.getCategory().getCategoryName().toLowerCase().contains(lowerCaseFilter)) {
@@ -124,7 +120,6 @@ public class AgentController implements Initializable {
 			});
 		});
 
-		// setvash tuka namerenite danni v sorted list i go setvash na table-a
 		SortedList<Storage> sortedData = new SortedList<>(filteredData);
 		sortedData.comparatorProperty().bind(storageTable.comparatorProperty());
 		storageTable.setItems(sortedData);
@@ -145,8 +140,6 @@ public class AgentController implements Initializable {
 
 		session.getTransaction().commit();
 	}
-	
-	
 
 	@FXML
 	Button editPrBtn;
@@ -244,6 +237,69 @@ public class AgentController implements Initializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+	}
+
+	@FXML
+	DatePicker startDate;
+
+	@FXML
+	DatePicker endDate;
+
+	public void showAvailableStorages() {
+		// TODO da se proveri dali raboti pravilno; update: da se pravqt oshte testove, TODO2 da se dobavi filtur
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+
+		LocalDate sDate = startDate.getValue();
+		LocalDate eDate = endDate.getValue();
+
+		if (sDate != null && eDate != null) {
+			System.out.println(sDate);
+			System.out.println(eDate);
+
+			List<Storage> query = session.createQuery("select s.storage from Contract s where (s.startDate not between '"+ sDate +"' and '"+ eDate +"') and "
+					+ "(s.endDate not between '"+ sDate +"' and '"+ eDate +"') and (s.agent = '"+ Singleton.getInstance().getAgent().getAgentID()+"')").list();
+
+			//vzimane na spisuk sus skladove bez dogovor i proverka dali sme agent na tezi skladove
+			List<Storage> noContractStorages = session.createQuery("from Storage s where s.storageID not in (select c.storage from Contract c)").list();
+			for (Storage storage : noContractStorages) {
+				if(storage.getAgentList().contains(Singleton.getInstance().getAgent())) {
+					query.add(storage);
+				}
+			}
+
+			ObservableList<Storage> dateStorageList = FXCollections.observableArrayList(query);
+			System.out.println(dateStorageList);
+			storageTable.setItems(dateStorageList);
+		} else
+			storageTable.setItems(storageList);
+
+		session.getTransaction().commit();
+
+		/*FilteredList<Storage> filteredData = new FilteredList<>(storageList, p -> true);
+		searchStorage.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(storage -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+
+				String lowerCaseFilter = newValue.toLowerCase();
+
+				if (storage.getStorageAddress().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (storage.getCategory().getCategoryName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (storage.getStorageType().getTypeName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				}
+				return false;
+			});
+		});
+
+		SortedList<Storage> sortedData = new SortedList<>(filteredData);
+		sortedData.comparatorProperty().bind(storageTable.comparatorProperty());
+		storageTable.setItems(sortedData);*/
 
 	}
 

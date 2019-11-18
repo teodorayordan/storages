@@ -37,12 +37,45 @@ public class Owner implements Serializable {
 		return "Owner [ownerID=" + ownerID + ", user=" + user + "]";
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ownerID == null) ? 0 : ownerID.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Owner other = (Owner) obj;
+		if (ownerID == null) {
+			if (other.ownerID != null)
+				return false;
+		} else if (!ownerID.equals(other.ownerID))
+			return false;
+		return true;
+	}
+
 	public Owner(User tempUser) {
 		this.user = tempUser;
 	}
 
 	public Owner() {
 		super();
+	}
+
+	public Integer getOwnerID() {
+		return ownerID;
+	}
+
+	public void setOwnerID(Integer ownerID) {
+		this.ownerID = ownerID;
 	}
 
 	public User getUser() {
@@ -55,6 +88,10 @@ public class Owner implements Serializable {
 
 	public List<Storage> getStorageList() {
 		return storageList;
+	}
+
+	public void setStorageList(List<Storage> storageList) {
+		this.storageList = storageList;
 	}
 
 }

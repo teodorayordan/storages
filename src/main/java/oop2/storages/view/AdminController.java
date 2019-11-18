@@ -13,17 +13,28 @@ import org.hibernate.query.Query;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 import oop2.storages.Owner;
 import oop2.storages.Storage;
 import oop2.storages.StorageType;
@@ -37,18 +48,21 @@ public class AdminController implements Initializable {
 	SessionFactory factory = HibernateUtility.getSessionFactory();
 	ObservableList<Category> categoryList;
 	ObservableList<StorageType> typeList;
-	
+	ObservableList<User> usersList;
+	ObservableList<Owner> ownerList;
+	ObservableList<Agent> agentList;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		loadTypeList();
 		loadCategoryList();
+		loadUsersList();
 	}
 
 	public void loadTypeList() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
-		
+
 		Query<StorageType> query = session.createQuery("from StorageType s");
 		typeList = FXCollections.observableArrayList(query.list());
 		stTypes.setItems(typeList);
@@ -58,10 +72,128 @@ public class AdminController implements Initializable {
 	public void loadCategoryList() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
-		
+
 		Query<Category> query = session.createQuery("from Category s");
 		categoryList = FXCollections.observableArrayList(query.list());
 		stCategories.setItems(categoryList);
+		session.getTransaction().commit();
+	}
+
+	@FXML
+	TableView<User> usersTable;
+
+	@FXML
+	TableColumn<User, String> nameColumn;
+
+	@FXML
+	TableColumn<User, String> accNameColumn;
+
+	@FXML
+	TableColumn<User, String> pinColumn;
+
+	@FXML
+	TextField searchUser;
+
+	@FXML
+	RadioButton showAgRadio;
+
+	@FXML
+	RadioButton showOwnRadio;
+
+	public void showProfiles() {
+
+		if (showAgRadio.isSelected()) {
+			usersList.clear();
+			for (Agent agent : agentList) {
+				usersList.add(agent.getUser());
+			}
+			usersTable.setItems(usersList);
+		} else if (showOwnRadio.isSelected()) {
+			usersList.clear();
+			for (Owner owner : ownerList) {
+				usersList.add(owner.getUser());
+			}
+			usersTable.setItems(usersList);
+		}
+		
+		FilteredList<User> filteredData = new FilteredList<>(usersList, p -> true);
+		searchUser.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(user -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+
+				String lowerCaseFilter = newValue.toLowerCase();
+
+				if (user.getPersonName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (user.getAccountName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (user.getPin().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				}
+				return false;
+
+			});
+		});
+
+		SortedList<User> sortedData = new SortedList<>(filteredData);
+		sortedData.comparatorProperty().bind(usersTable.comparatorProperty());
+		searchUser.clear();
+		usersTable.setItems(sortedData);
+
+	}
+
+	public void loadUsersList() {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+
+		ToggleGroup toggleGroup = new ToggleGroup();
+		showAgRadio.setToggleGroup(toggleGroup);
+		showOwnRadio.setToggleGroup(toggleGroup);
+		
+		showAgRadio.setSelected(true);
+
+		Query<User> query = session.createQuery("from User s");
+		usersList = FXCollections.observableArrayList(query.list());
+
+		Query<Owner> queryOwn = session.createQuery("from Owner s");
+		ownerList = FXCollections.observableArrayList(queryOwn.list());
+
+		Query<Agent> queryAg = session.createQuery("from Agent s");
+		agentList = FXCollections.observableArrayList(queryAg.list());
+
+		nameColumn.setCellValueFactory(new PropertyValueFactory<User, String>("personName"));
+		accNameColumn.setCellValueFactory(new PropertyValueFactory<User, String>("accountName"));
+		pinColumn.setCellValueFactory(new PropertyValueFactory<User, String>("pin"));
+
+		usersTable.setItems(usersList);
+
+		FilteredList<User> filteredData = new FilteredList<>(usersList, p -> true);
+		searchUser.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(user -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+
+				String lowerCaseFilter = newValue.toLowerCase();
+
+				if (user.getPersonName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (user.getAccountName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (user.getPin().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				}
+				return false;
+
+			});
+		});
+
+		SortedList<User> sortedData = new SortedList<>(filteredData);
+		sortedData.comparatorProperty().bind(usersTable.comparatorProperty());
+		usersTable.setItems(sortedData);
+
 		session.getTransaction().commit();
 	}
 
@@ -106,6 +238,7 @@ public class AdminController implements Initializable {
 				session.save(tempUser);
 				Owner tempOwner = new Owner(tempUser);
 				session.save(tempOwner);
+				ownerList.add(tempOwner);
 			} else {
 				// ne znam dali raboti
 				if (checkUser.getAccountName().equals(account))
@@ -168,6 +301,8 @@ public class AdminController implements Initializable {
 
 				Agent tempAgent = new Agent(tempUser, Double.parseDouble(agentCommission.getText()));
 				session.save(tempAgent);
+				
+				agentList.add(tempAgent);
 			} else {
 				// pak ne znam dali raboti
 				if (checkUser.getAccountName().equals(account))
@@ -210,6 +345,7 @@ public class AdminController implements Initializable {
 			Category tempCategory = new Category(category);
 			categoryList.add(tempCategory);
 			session.save(tempCategory);
+			
 		} else {
 			categoryText.setVisible(true);
 
@@ -295,6 +431,58 @@ public class AdminController implements Initializable {
 		 * 
 		 * // commit transaction session.getTransaction().commit();
 		 */
+	}
+
+	@FXML
+	Button openPrBtn;
+
+	public void openProfile(ActionEvent event) {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+		User tempUser = usersTable.getSelectionModel().getSelectedItem();
+		Singleton.getInstance().setUser(tempUser);
+		System.out.println(tempUser);
+
+		if (showAgRadio.isSelected()) {
+			try {
+				Agent agent  = (Agent) session.createQuery(
+						"from Agent s where id_storage_agent='" + tempUser.getUserID() + "'")
+						.uniqueResult();
+				
+				Singleton.getInstance().setAgent(agent);
+				session.getTransaction().commit();
+
+				Parent root = FXMLLoader.load(getClass().getResource("AgentPane.fxml"));
+				Stage stage = new Stage();
+				stage.setScene(new Scene(root));
+				stage.setTitle("Agent Profile");
+				stage.show();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if (showOwnRadio.isSelected()) {
+			try {
+				Owner owner  = (Owner) session.createQuery(
+						"from Owner s where id_owner='" + tempUser.getUserID() + "'")
+						.uniqueResult();
+
+				Singleton.getInstance().setOwner(owner);
+				session.getTransaction().commit();
+				
+				Parent root = FXMLLoader.load(getClass().getResource("OwnerPane.fxml"));
+				Stage stage = new Stage();
+				stage.setScene(new Scene(root));
+				stage.setTitle("Owner Profile");
+				stage.show();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else  {
+			System.out.println("Something went wrong");
+			session.getTransaction().commit();
+		}
+		
+		
 	}
 
 	public void keyPressed(KeyEvent event) {

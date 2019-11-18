@@ -44,6 +44,34 @@ public class Agent implements Serializable {
 	public String toString() {
 		return "Agent [user=" + user + ", commission=" + commission + ", rating=" + rating + "]";
 	}
+	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((agentID == null) ? 0 : agentID.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Agent other = (Agent) obj;
+		if (agentID == null) {
+			if (other.agentID != null)
+				return false;
+		} else if (!agentID.equals(other.agentID))
+			return false;
+		return true;
+	}
+
 
 	public Agent() {
 		setRating();

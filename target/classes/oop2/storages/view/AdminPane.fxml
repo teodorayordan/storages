@@ -18,15 +18,15 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="670.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="oop2.storages.view.AdminController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="770.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="oop2.storages.view.AdminController">
    <children>
-      <TabPane prefHeight="460.0" prefWidth="670.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="550.0" prefWidth="770.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Create Owner">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="386.0" prefWidth="617.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="408.0" prefWidth="645.0">
                      <children>
-                        <GridPane layoutX="123.0" layoutY="33.0" prefHeight="365.0" prefWidth="425.0">
+                        <GridPane layoutX="173.0" layoutY="78.0" prefHeight="365.0" prefWidth="425.0">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -58,7 +58,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="389.0" prefWidth="600.0">
                      <children>
-                        <GridPane layoutX="111.0" layoutY="34.0" prefHeight="364.0" prefWidth="449.0">
+                        <GridPane layoutX="161.0" layoutY="79.0" prefHeight="364.0" prefWidth="449.0">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -93,56 +93,56 @@
                <content>
                   <BorderPane prefHeight="373.0" prefWidth="600.0">
                      <left>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="431.0" prefWidth="327.0" BorderPane.alignment="CENTER">
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="521.0" prefWidth="388.0" BorderPane.alignment="CENTER">
                            <children>
-                              <GridPane layoutX="15.0" layoutY="40.0" prefHeight="352.0" prefWidth="289.0">
+                              <GridPane layoutX="38.0" layoutY="62.0" prefHeight="397.0" prefWidth="312.0">
                                  <columnConstraints>
-                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0" prefWidth="120.0" />
-                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="179.0" minWidth="10.0" prefWidth="175.0" />
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="208.0" minWidth="10.0" prefWidth="208.0" />
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="226.0" minWidth="10.0" prefWidth="128.0" />
                                  </columnConstraints>
                                  <rowConstraints>
-                                    <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="31.0" valignment="CENTER" vgrow="SOMETIMES" />
-                                     <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="15.0" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="288.0" minHeight="10.0" prefHeight="288.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="19.0" valignment="CENTER" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="51.0" valignment="CENTER" vgrow="SOMETIMES" />
+                                     <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="297.0" minHeight="10.0" prefHeight="297.0" vgrow="SOMETIMES" />
                                  </rowConstraints>
                                  <children>
-                                    <TextField fx:id="storageCategory" GridPane.columnIndex="1" />
-                                    <Button fx:id="crStCategoryBtn" mnemonicParsing="false" onAction="#addCategory" text="Add Category" />
-                                    <Label fx:id="categoryText" text="Such category already exists!" textFill="#fc0000" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                                    <ListView fx:id="stCategories" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <Label alignment="CENTER" prefHeight="17.0" prefWidth="121.0" text="Storage Categories" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                                    <TextField fx:id="storageCategory" prefHeight="18.0" prefWidth="120.0" GridPane.rowIndex="1" />
+                                    <Button fx:id="crStCategoryBtn" mnemonicParsing="false" onAction="#addCategory" text="Add Category" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label fx:id="categoryText" prefHeight="17.0" prefWidth="157.0" text="Such category already exists!" textFill="#fc0000" visible="false" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                                    <ListView fx:id="stCategories" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3" />
+                                    <Label alignment="CENTER" prefHeight="17.0" prefWidth="121.0" text="Storage Categories" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
                                  </children>
                               </GridPane>
+                              <Separator layoutX="384.0" layoutY="-1.0" orientation="VERTICAL" prefHeight="525.0" prefWidth="7.0" />
                            </children>
                         </AnchorPane>
                      </left>
                      <right>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="431.0" prefWidth="316.0" BorderPane.alignment="CENTER">
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="521.0" prefWidth="389.0" BorderPane.alignment="CENTER">
                            <children>
-                              <GridPane layoutY="40.0" prefHeight="352.0" prefWidth="289.0">
+                              <GridPane layoutX="39.0" layoutY="62.0" prefHeight="397.0" prefWidth="312.0">
                                  <columnConstraints>
-                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0" prefWidth="120.0" />
-                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="179.0" minWidth="10.0" prefWidth="175.0" />
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="208.0" minWidth="10.0" prefWidth="208.0" />
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="226.0" minWidth="10.0" prefWidth="128.0" />
                                  </columnConstraints>
                                  <rowConstraints>
-                                    <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="31.0" valignment="CENTER" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="15.0" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="288.0" minHeight="10.0" prefHeight="288.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="19.0" valignment="CENTER" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="51.0" valignment="CENTER" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="84.0" minHeight="0.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="297.0" minHeight="10.0" prefHeight="297.0" vgrow="SOMETIMES" />
                                  </rowConstraints>
                                  <children>
-                                    <Label text="Storage Types" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-                                    <TextField fx:id="storageType" GridPane.columnIndex="1" />
-                                     <Label fx:id="typeText" text="Such type already exists!" textFill="#fc0000" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                                    <Button fx:id="crStTypeBtn" mnemonicParsing="false" onAction="#addType" prefHeight="25.0" prefWidth="89.0" text="Add Type" />
-                                    <ListView fx:id="stTypes" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label text="Storage Types" GridPane.columnSpan="2" />
+                                    <TextField fx:id="storageType" GridPane.rowIndex="1" />
+                                     <Label fx:id="typeText" text="Such type already exists!" textFill="#fc0000" visible="false" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                                    <Button fx:id="crStTypeBtn" mnemonicParsing="false" onAction="#addType" prefHeight="25.0" prefWidth="89.0" text="Add Type" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <ListView fx:id="stTypes" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3" />
                                  </children>
                               </GridPane>
                            </children>
                         </AnchorPane>
                      </right>
-                     <center>
-                        <Separator orientation="VERTICAL" prefHeight="431.0" prefWidth="0.0" BorderPane.alignment="CENTER" />
-                     </center>
                   </BorderPane>
                </content>
             </Tab>
@@ -150,7 +150,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <GridPane layoutX="110.0" layoutY="18.0" prefHeight="395.0" prefWidth="450.0">
+                        <GridPane layoutX="160.0" layoutY="63.0" prefHeight="395.0" prefWidth="450.0">
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -191,29 +191,47 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="364.0" prefWidth="590.0">
                      <children>
-                        <GridPane layoutX="99.0" layoutY="52.0" prefHeight="299.0" prefWidth="356.0">
+                        <GridPane layoutX="95.0" layoutY="48.0" prefHeight="426.0" prefWidth="581.0">
                           <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="175.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="330.0" minWidth="10.0" prefWidth="289.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="278.0" minWidth="10.0" prefWidth="162.0" />
                           </columnConstraints>
                           <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="98.0" minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="98.0" minHeight="10.0" prefHeight="53.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="216.0" minHeight="10.0" prefHeight="145.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="185.0" minHeight="10.0" prefHeight="185.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.rowSpan="2">
                                  <children>
-                                    <RadioButton layoutY="102.0" mnemonicParsing="false" text="Show Owners" />
+                                    <GridPane layoutX="31.0" layoutY="40.0" prefHeight="131.0" prefWidth="99.0">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <RadioButton fx:id="showAgRadio" mnemonicParsing="false" onAction="#showProfiles" text="Show Agents" />
+                                          <RadioButton fx:id="showOwnRadio" mnemonicParsing="false" onAction="#showProfiles" text="Show Owners" GridPane.rowIndex="1" />
+                                       </children>
+                                    </GridPane>
                                  </children>
                               </AnchorPane>
-                              <TableView prefHeight="200.0" prefWidth="200.0">
+                              <TableView fx:id="usersTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.rowSpan="2">
                                 <columns>
-                                  <TableColumn prefWidth="75.0" text="C1" />
-                                  <TableColumn prefWidth="75.0" text="C2" />
+                                  <TableColumn fx:id="nameColumn" prefWidth="176.0" text="Name" />
+                                  <TableColumn fx:id="accNameColumn" prefWidth="130.0" text="Account Name" />
+                                    <TableColumn fx:id="pinColumn" prefWidth="127.0" text="PIN" />
                                 </columns>
                               </TableView>
-                              <Button mnemonicParsing="false" text="Open Profile" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <RadioButton mnemonicParsing="false" text="Show Agents" GridPane.columnIndex="1" />
+                              <Button fx:id="openPrBtn" mnemonicParsing="false" onAction="#openProfile" text="Open Profile" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <TextField fx:id="searchUser" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label text="All Profiles" GridPane.columnSpan="3" GridPane.halignment="CENTER" />
+                              <Label text="Search for Profile" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
                      </children></AnchorPane>
