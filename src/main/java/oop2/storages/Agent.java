@@ -123,5 +123,9 @@ public class Agent implements Serializable {
 	public void setStorageList(List<Storage> storageList) {
 		this.storageList = storageList;
 	}
+	
+	public String getPersonName() {
+		return user.getPersonName();
+	}
 
 }

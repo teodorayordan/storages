@@ -31,11 +31,6 @@ public class Storage {
 	@NotFound(action = NotFoundAction.IGNORE)
 	private Owner owner;
 
-	/*@ManyToOne
-	@JoinColumn(name = "id_storage_agent", nullable = false)
-	@NotFound(action = NotFoundAction.IGNORE)
-	private Agent agent;*/
-
 	@ManyToOne
 	@JoinColumn(name = "id_storage_type", nullable = false)
 	private StorageType storageType;
@@ -61,8 +56,6 @@ public class Storage {
 			@JoinColumn(name = " id_storage_agent") })
 	private List<Agent> agentList;
 
-	
-	
 	public Storage(Owner owner, StorageType storageType, Category category, Double storageSize,
 			String climateConditions, String storageAddress, List<Agent> agentList) {
 		super();
@@ -76,25 +69,10 @@ public class Storage {
 		this.agentList = agentList;
 	}
 
-	/*public Storage(Owner owner, Agent agent, StorageType storageType, Category category, Double storageSize,
-			String climateConditions, String storageAddress, Boolean storageStatus) {
-		super();
-		this.owner = owner;
-		this.agent = agent;
-		this.storageType = storageType;
-		this.category = category;
-		this.storageSize = storageSize;
-		this.climateConditions = climateConditions;
-		this.storageAddress = storageAddress;
-		this.storageStatus = storageStatus;
-	}*/
-
 	public Storage() {
 
 	}
 
-	
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -135,14 +113,6 @@ public class Storage {
 	public void setOwner(Owner owner) {
 		this.owner = owner;
 	}
-
-	/*public Agent getAgent() {
-		return agent;
-	}
-
-	public void setAgent(Agent agent) {
-		this.agent = agent;
-	}*/
 
 	public StorageType getStorageType() {
 		return storageType;
@@ -199,11 +169,11 @@ public class Storage {
 	public void setAgentList(List<Agent> agentList) {
 		this.agentList = agentList;
 	}
-	
+
 	public void addAgent(Agent agent) {
 		this.agentList.add(agent);
 	}
-	
+
 	public void removeAgent(Agent agent) {
 		this.agentList.remove(agent);
 	}
@@ -216,12 +186,12 @@ public class Storage {
 				+ "]";
 	}
 
-	/*@Override
-	public String toString() {
-		return "Storage [storageID=" + storageID + ", owner=" + owner + ", agent=" + agent + ", storageType="
-				+ storageType + ", category=" + category + ", storageSize=" + storageSize + ", climateConditions="
-				+ climateConditions + ", storageAddress=" + storageAddress + ", storageStatus=" + storageStatus + "]";
-	}*/
+	/*
+	 * @Override public String toString() { return "Storage [storageID=" + storageID
+	 * + ", owner=" + owner + ", agent=" + agent + ", storageType=" + storageType +
+	 * ", category=" + category + ", storageSize=" + storageSize +
+	 * ", climateConditions=" + climateConditions + ", storageAddress=" +
+	 * storageAddress + ", storageStatus=" + storageStatus + "]"; }
+	 */
 
-	
 }

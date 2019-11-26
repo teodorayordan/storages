@@ -12,10 +12,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -74,8 +72,6 @@ public class AllContractsController implements Initializable {
 				.list();
 		contractList = FXCollections.observableArrayList(query);
 
-		// tuka definirash vuv vsqka kolona kakvo ima kato towa v skobite e imeto na
-		// promenlivata ot klasa na obekta
 		storageColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("storage"));
 		startDateColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("startDate"));
 		endDateColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("endDate"));
@@ -94,9 +90,6 @@ public class AllContractsController implements Initializable {
 
 				String lowerCaseFilter = newValue.toLowerCase();
 
-				// kazvash koi poleta da tursi s teq if-ove
-				// tuka ima .toString() toe da se vzeme stringa i se sravnavq s newValue toest
-				// tova koeto napishesh
 				if (contract.getStorage().getStorageAddress().toLowerCase().contains(lowerCaseFilter)) {
 					return true;
 				} else if (contract.getStartDate().toString().contains(newValue)) {
@@ -116,7 +109,6 @@ public class AllContractsController implements Initializable {
 
 		allContractsTable.getSelectionModel().getSelectedItem();
 
-		// setvash tuka namerenite danni v sorted list i go setvash na table-a
 		SortedList<Contract> sortedData = new SortedList<>(filteredData);
 		sortedData.comparatorProperty().bind(allContractsTable.comparatorProperty());
 		allContractsTable.setItems(sortedData);
@@ -134,6 +126,9 @@ public class AllContractsController implements Initializable {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
+		searchContract.clear();
+		ObservableList<Contract> dateContractList = FXCollections.observableArrayList();
+
 		LocalDate sDate = startDate.getValue();
 		LocalDate eDate = endDate.getValue();
 
@@ -142,15 +137,19 @@ public class AllContractsController implements Initializable {
 			System.out.println(eDate);
 
 			List<Contract> query = session.createQuery(
-					"from Contract s where (s.startDate between '"+ sDate +"' and '"+ eDate +"') and (s.agent = '"+ Singleton.getInstance().getAgent().getAgentID()+"')").list();
+					"from Contract s where ((s.startDate between '"+ sDate +"' and '"+ eDate +"') or"
+							+ " (s.endDate between '"+ sDate +"' and '"+ eDate +"') or "
+									+ "((s.startDate < '"+ sDate +"' and s.endDate > '"+ eDate +"'))) "
+											+ "and (s.agent = '"+ Singleton.getInstance().getAgent().getAgentID()+"')").list();
 
-			ObservableList<Contract> dateContractList = FXCollections.observableArrayList(query);
+			dateContractList = FXCollections.observableArrayList(query);
+			System.out.println(dateContractList);
 
 			allContractsTable.setItems(dateContractList);
-		}else
+		} else
 			allContractsTable.setItems(contractList);
-		
-		/*FilteredList<Contract> filteredData = new FilteredList<>(contractList, p -> true);
+
+		FilteredList<Contract> filteredData = new FilteredList<>(dateContractList, p -> true);
 		searchContract.textProperty().addListener((observable, oldValue, newValue) -> {
 			filteredData.setPredicate(contract -> {
 				if (newValue == null || newValue.isEmpty()) {
@@ -159,9 +158,6 @@ public class AllContractsController implements Initializable {
 
 				String lowerCaseFilter = newValue.toLowerCase();
 
-				// kazvash koi poleta da tursi s teq if-ove
-				// tuka ima .toString() toe da se vzeme stringa i se sravnavq s newValue toest
-				// tova koeto napishesh
 				if (contract.getStorage().getStorageAddress().toLowerCase().contains(lowerCaseFilter)) {
 					return true;
 				} else if (contract.getStartDate().toString().contains(newValue)) {
@@ -181,10 +177,10 @@ public class AllContractsController implements Initializable {
 
 		allContractsTable.getSelectionModel().getSelectedItem();
 
-		// setvash tuka namerenite danni v sorted list i go setvash na table-a
 		SortedList<Contract> sortedData = new SortedList<>(filteredData);
+		System.out.println(sortedData);
 		sortedData.comparatorProperty().bind(allContractsTable.comparatorProperty());
-		allContractsTable.setItems(sortedData);*/
+		allContractsTable.setItems(sortedData);
 
 		session.getTransaction().commit();
 	}

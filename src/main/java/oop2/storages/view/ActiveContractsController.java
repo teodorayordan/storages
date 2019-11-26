@@ -85,9 +85,6 @@ public class ActiveContractsController implements Initializable {
 
 				String lowerCaseFilter = newValue.toLowerCase();
 
-				// kazvash koi poleta da tursi s teq if-ove
-				// tuka ima .toString() toe da se vzeme stringa i se sravnavq s newValue toest
-				// tova koeto napishesh
 				if (contract.getStorage().getStorageAddress().toLowerCase().contains(lowerCaseFilter)) {
 					return true;
 				} else if (contract.getStartDate().toString().contains(newValue)) {
@@ -107,7 +104,6 @@ public class ActiveContractsController implements Initializable {
 		
 		activeContractsTable.getSelectionModel().getSelectedItem();
 
-		// setvash tuka namerenite danni v sorted list i go setvash na table-a
 		SortedList<Contract> sortedData = new SortedList<>(filteredData);
 		sortedData.comparatorProperty().bind(activeContractsTable.comparatorProperty());
 		activeContractsTable.setItems(sortedData);
@@ -118,8 +114,6 @@ public class ActiveContractsController implements Initializable {
 		    }
 		});
 	
-		
 		session.getTransaction().commit();
 	}
-
 }

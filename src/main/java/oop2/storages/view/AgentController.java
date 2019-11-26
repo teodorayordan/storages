@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.controlsfx.control.Notifications;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -30,6 +31,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -43,6 +45,7 @@ import oop2.storages.Agent;
 import oop2.storages.Category;
 import oop2.storages.Contract;
 import oop2.storages.HibernateUtility;
+import oop2.storages.Notification;
 import oop2.storages.Owner;
 import oop2.storages.Storage;
 import oop2.storages.StorageType;
@@ -59,7 +62,8 @@ public class AgentController implements Initializable {
 		showProfileInfo();
 		showMaintainedStorages();
 		loadCreateContract();
-
+		onSelectMaintainedStoragesTab();
+		showNotifications();
 	}
 
 	public void showProfileInfo() {
@@ -91,7 +95,9 @@ public class AgentController implements Initializable {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
-		storageList = FXCollections.observableArrayList(Singleton.getInstance().getAgent().getStorageList());
+		//pravim go taka za da se relodva vseki put kato vlezem ontovo v taba ako nqkoi ot chuzd profil e napravil neshto da se izobrazi
+		Agent agent = (Agent) session.createQuery("from Agent s where s.agentID = '"+ Singleton.getInstance().getAgent().getAgentID() +"' ").uniqueResult();
+		storageList = FXCollections.observableArrayList(agent.getStorageList());
 
 		storageAddressColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("storageAddress"));
 		storageCategoryColumn.setCellValueFactory(new PropertyValueFactory<Storage, String>("category"));
@@ -125,6 +131,7 @@ public class AgentController implements Initializable {
 		storageTable.setItems(sortedData);
 
 		session.getTransaction().commit();
+		System.out.println("Closed yeah?");
 	}
 
 	public void loadCreateContract() {
@@ -138,6 +145,28 @@ public class AgentController implements Initializable {
 		}
 		storageCombo.getItems().setAll(availableStorages);
 
+		session.getTransaction().commit();
+	}
+	
+	public void showNotifications(){
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+		
+		Query<Notification> notiQuery = session.createQuery("from Notification s where s.user = '"+ Singleton.getInstance().getAgent().getAgentID() +"' "
+				+ "and s.notificationStatus = 1");
+		ObservableList<Notification> notifications = FXCollections.observableArrayList(notiQuery.list());
+		
+		System.out.println(notifications);
+		
+		for (Notification noti : notifications) {
+            Platform.runLater(() -> {
+            	Notifications.create() .title("Task Reminder") .text(noti.getNotificationText()) .showWarning();
+            });	
+        	Notification bufNoti = noti;
+        	bufNoti.setNotificationStatus(false);
+        	session.update(bufNoti);
+		}
+		
 		session.getTransaction().commit();
 	}
 
@@ -194,6 +223,21 @@ public class AgentController implements Initializable {
 
 	@FXML
 	TextField fullPrice;
+	
+	@FXML
+	Label chStorageError;
+
+	@FXML
+	Label renterNameError;
+
+	@FXML
+	Label renterPinError;
+
+	@FXML
+	Label contrEndDateError;
+
+	@FXML
+	Label stSinglePriceError;
 
 	public void createContract(ActionEvent event) {
 		Session session = factory.getCurrentSession();
@@ -210,11 +254,13 @@ public class AgentController implements Initializable {
 			Storage tempStorage = choosenStorage;
 			tempStorage.setStorageStatus(true);
 			System.out.println(tempStorage);
+			System.out.println(tempStorage.getStorageStatus());
 			session.update(tempStorage);
 			session.save(contract);
 		} else {
 			System.out.println("Storage is already rented");
 		}
+		
 		session.getTransaction().commit();
 	}
 
@@ -253,6 +299,8 @@ public class AgentController implements Initializable {
 
 		LocalDate sDate = startDate.getValue();
 		LocalDate eDate = endDate.getValue();
+		
+		ObservableList<Storage> dateStorageList = FXCollections.observableArrayList();
 
 		if (sDate != null && eDate != null) {
 			System.out.println(sDate);
@@ -269,7 +317,7 @@ public class AgentController implements Initializable {
 				}
 			}
 
-			ObservableList<Storage> dateStorageList = FXCollections.observableArrayList(query);
+			dateStorageList = FXCollections.observableArrayList(query);
 			System.out.println(dateStorageList);
 			storageTable.setItems(dateStorageList);
 		} else
@@ -277,7 +325,7 @@ public class AgentController implements Initializable {
 
 		session.getTransaction().commit();
 
-		/*FilteredList<Storage> filteredData = new FilteredList<>(storageList, p -> true);
+		FilteredList<Storage> filteredData = new FilteredList<>(dateStorageList, p -> true);
 		searchStorage.textProperty().addListener((observable, oldValue, newValue) -> {
 			filteredData.setPredicate(storage -> {
 				if (newValue == null || newValue.isEmpty()) {
@@ -299,7 +347,7 @@ public class AgentController implements Initializable {
 
 		SortedList<Storage> sortedData = new SortedList<>(filteredData);
 		sortedData.comparatorProperty().bind(storageTable.comparatorProperty());
-		storageTable.setItems(sortedData);*/
+		storageTable.setItems(sortedData);
 
 	}
 
@@ -321,7 +369,7 @@ public class AgentController implements Initializable {
 
 	AnchorPane anpCont3 = new AnchorPane();
 
-	public void showActiveContracts(ActionEvent event) {
+	public void showActiveContracts() {
 		try {
 			anpCont.getChildren().clear();
 			anpCont.getChildren().add(FXMLLoader.load(getClass().getResource("ActiveContracts.fxml")));
@@ -333,7 +381,7 @@ public class AgentController implements Initializable {
 
 	}
 
-	public void showContractInfo(ActionEvent event) {
+	public void showContractInfo() {
 		try {
 			anpCont2.getChildren().clear();
 			anpCont2.getChildren().add(FXMLLoader.load(getClass().getResource("ContractInfo.fxml")));
@@ -345,7 +393,7 @@ public class AgentController implements Initializable {
 
 	}
 
-	public void showAllContracts(ActionEvent event) {
+	public void showAllContracts() {
 		try {
 			anpCont3.getChildren().clear();
 			anpCont3.getChildren().add(FXMLLoader.load(getClass().getResource("AllContracts.fxml")));
@@ -354,6 +402,15 @@ public class AgentController implements Initializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@FXML
+	Tab maintainedStoragesTab;
+	
+	public void onSelectMaintainedStoragesTab() {
+		maintainedStoragesTab.setOnSelectionChanged(e -> {
+			showMaintainedStorages();
+		});
 	}
 
 	public void keyPressed(KeyEvent event) {

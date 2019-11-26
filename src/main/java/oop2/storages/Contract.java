@@ -43,6 +43,9 @@ public class Contract {
 
 	@Column(name = "renter_pin")
 	private String renterPin = null;
+	
+	@Column(name = "contract_status")
+	private Boolean contractStatus;
 
 	public Contract() {
 		super();
@@ -58,6 +61,7 @@ public class Contract {
 		this.price = price;
 		this.renterName = renterName;
 		this.renterPin = renterPin;
+		this.contractStatus = true;
 	}
 
 	@Override
@@ -129,6 +133,14 @@ public class Contract {
 
 	public void setRenterPin(String renterPin) {
 		this.renterPin = renterPin;
+	}
+
+	public Boolean getContractStatus() {
+		return contractStatus;
+	}
+
+	public void setContractStatus(Boolean contractStatus) {
+		this.contractStatus = contractStatus;
 	}
 	
 	

@@ -29,12 +29,12 @@
          <children>
             <TableView fx:id="allContractsTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="4">
               <columns>
-                <TableColumn prefWidth="86.0" text="Storage" />
-                <TableColumn prefWidth="75.0" text="Start Date" />
-                  <TableColumn prefWidth="69.0" text="End Date" />
-                  <TableColumn prefWidth="112.0" text="Renter Name" />
-                  <TableColumn prefWidth="81.0" text="Renter PIN" />
-                  <TableColumn prefWidth="69.0" text="Price" />
+                <TableColumn fx:id="storageColumn" prefWidth="86.0" text="Storage" />
+                <TableColumn fx:id="startDateColumn" prefWidth="75.0" text="Start Date" />
+                  <TableColumn fx:id="endDateColumn" prefWidth="69.0" text="End Date" />
+                  <TableColumn fx:id="renterNameColumn" prefWidth="112.0" text="Renter Name" />
+                  <TableColumn fx:id="renterPinColumn" prefWidth="81.0" text="Renter PIN" />
+                  <TableColumn fx:id="priceColumn" prefWidth="69.0" text="Price" />
               </columns>
             </TableView>
             <Label text="All Contracts" GridPane.columnSpan="3" GridPane.halignment="CENTER" />
@@ -42,7 +42,7 @@
             <Label text="End Date" GridPane.rowIndex="2" />
             <DatePicker fx:id="startDate" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
             <DatePicker fx:id="endDate" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
-            <Button fx:id="showContract" mnemonicParsing="false" onAction="#showContract" text="Show Contract" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Button fx:id="showContract" mnemonicParsing="false" onAction="#showDateContract" text="Show Contract" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
             <TextField fx:id="searchContract" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" />
             <Label text="Search for Contract" GridPane.rowIndex="3" />
          </children>

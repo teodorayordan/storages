@@ -5,7 +5,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
+import org.controlsfx.control.CheckComboBox;
+import org.controlsfx.control.Notifications;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -30,25 +33,31 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import oop2.storages.Agent;
 import oop2.storages.Category;
+import oop2.storages.Contract;
 import oop2.storages.HibernateUtility;
+import oop2.storages.Notification;
 import oop2.storages.Owner;
 import oop2.storages.Storage;
 import oop2.storages.StorageType;
 import oop2.storages.User;
 
 public class OwnerController implements Initializable {
-
+	
 	SessionFactory factory = HibernateUtility.getSessionFactory();
 
 	ObservableList<Agent> agentList;
@@ -56,6 +65,9 @@ public class OwnerController implements Initializable {
 	ObservableList<Category> categoryList;
 	ObservableList<Storage> storageList;
 
+	//TODO da se dobavi zaqvka za otdavane pri suzdavane na sklad kum agentite koito sa izbrani i pri redaktirane sushto
+	
+	
 	// definirat se id na tablica i id na kolonite i
 	@FXML
 	TableView<Storage> storageTable;
@@ -80,6 +92,8 @@ public class OwnerController implements Initializable {
 		showProfileInfo();
 		showOwnedStorages();
 		loadCreateStorage();
+		onSelectOwnedStoragesTab();
+		showNotifications();
 	}
 
 	public void showProfileInfo() {
@@ -134,13 +148,25 @@ public class OwnerController implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	@FXML
+	GridPane gridPane;
+	
+	@FXML
+	CheckComboBox<Agent> checkComboBox;
+	
 	public void loadCreateStorage() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
 		Query<Agent> agentQuery = session.createQuery("from Agent s ");
 		agentList = FXCollections.observableArrayList(agentQuery.list());
-		comboAgent.getItems().setAll(agentList);
+		checkComboBox = new CheckComboBox<Agent>(agentList);
+		checkComboBox.setId("checkComboBox");
+		gridPane.add(checkComboBox, 1, 0);
+		
+		/*Query<Agent> agentQuery = session.createQuery("from Agent s ");
+		agentList = FXCollections.observableArrayList(agentQuery.list());
+		comboAgent.getItems().setAll(agentList);*/
 
 		Query<StorageType> typeQuery = session.createQuery("from StorageType s ");
 		typeList = FXCollections.observableArrayList(typeQuery.list());
@@ -150,6 +176,28 @@ public class OwnerController implements Initializable {
 		categoryList = FXCollections.observableArrayList(categoryQuery.list());
 		comboCategory.getItems().setAll(categoryList);
 
+		session.getTransaction().commit();
+	}
+	
+	public void showNotifications(){
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+		
+		Query<Notification> notiQuery = session.createQuery("from Notification s where s.user = '"+ Singleton.getInstance().getOwner().getOwnerID() +"' "
+				+ "and s.notificationStatus = 1");
+		ObservableList<Notification> notifications = FXCollections.observableArrayList(notiQuery.list());
+		
+		System.out.println(notifications);
+		
+		for (Notification noti : notifications) {
+            Platform.runLater(() -> {
+            	Notifications.create() .title("Task Reminder") .text(noti.getNotificationText()) .showWarning();
+            });	
+        	Notification bufNoti = noti;
+        	bufNoti.setNotificationStatus(false);
+        	session.update(bufNoti);
+		}
+		
 		session.getTransaction().commit();
 	}
 
@@ -162,7 +210,7 @@ public class OwnerController implements Initializable {
 	@FXML
 	Label accountNameText;
 
-	public void editProfile(ActionEvent event) {
+	public void editProfile() {
 
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("EditProfile.fxml"));
@@ -201,28 +249,63 @@ public class OwnerController implements Initializable {
 
 	@FXML
 	ComboBox<Category> comboCategory;
+	
+	@FXML
+	Label stAgentError;
 
-	public void createStorage(ActionEvent event) {
+	@FXML
+	Label stTypeError;
+
+	@FXML
+	Label stCategoryError;
+
+	@FXML
+	Label stAddressError;
+
+	@FXML
+	Label clmCondError;
+
+	@FXML
+	Label stSizeError;
+
+	public void createStorage() {
 		Session session = factory.getCurrentSession();
+		session.beginTransaction();		
+		
 		Owner owner = Singleton.getInstance().getOwner();
-		Agent chosenAgent = (Agent) comboAgent.getValue();
-		List<Agent> agentList = new ArrayList<>();
-		agentList.add(chosenAgent);
+		ObservableList<Agent> agentList = FXCollections.observableArrayList( checkComboBox.getCheckModel().getCheckedItems());
 		StorageType chosenType = (StorageType) comboType.getValue();
 		Category chosenCategory = (Category) comboCategory.getValue();
-		String storageAdr = storageAddressColumn.getText();
+		String storageAdr = storageAddress.getText();
 		String climateConditions = stClmConditions.getText();
 		Double storageSze = Double.parseDouble(storageSize.getText().toString());
 
+		System.out.println(storageAdr);
+		
 		Storage tempStorage = new Storage(owner, chosenType, chosenCategory, storageSze, climateConditions, storageAdr,
 				agentList);
 
 		System.out.println(tempStorage);
+		
+		//tuka dobavihme izvestie kogato se suzdade da se izprati izvestiq kum agentite
+		ObservableList<Notification> notificationList = FXCollections.observableArrayList();
+		
+		for (Agent agent : agentList) {
+			Notification noti = new Notification(agent.getUser(), (LocalDate.now() + ": Storage "+ tempStorage.getStorageAddress() +" is free for sale"));
+			notificationList.add(noti);
+		}
+		
+		List<Notification> notificationResult = session.createQuery("from Notification s where s.notificationStatus = 1").list();
+		System.out.println(notificationResult);
+		for (Notification notification : notificationList) {
+			if(!notificationResult.contains(notification))
+				System.out.println(notification);
+				session.save(notification);
+		}
 
 		storageList.add(tempStorage);
 
 		// start a transaction
-		session.beginTransaction();
 
 		session.save(tempStorage);
 
@@ -245,7 +328,7 @@ public class OwnerController implements Initializable {
 
 	SplitPane spl2 = new SplitPane();
 
-	public void showStorage(ActionEvent event) {
+	public void showStorage() {
 		try {
 			Storage tempStorage = storageTable.getSelectionModel().getSelectedItem();
 			Singleton.getInstance().setStorage(tempStorage);
@@ -258,42 +341,78 @@ public class OwnerController implements Initializable {
 		}
 
 	}
-	
+
 	@FXML
 	DatePicker startDate;
-	
+
 	@FXML
 	DatePicker endDate;
-	
+
 	public void showAvailableStorages() {
-		// TODO da se proveri dali raboti pravilno; update: da se pravqt oshte testove, TODO2 da se dobavi filtur
+		// TODO da se proveri dali raboti pravilno; update: da se pravqt oshte testove,
+		// TODO2 da se dobavi filtur uj raboti
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
 		LocalDate sDate = startDate.getValue();
 		LocalDate eDate = endDate.getValue();
+		
+		ObservableList<Storage> dateStorageList = FXCollections.observableArrayList();
 
 		if (sDate != null && eDate != null) {
 			System.out.println(sDate);
 			System.out.println(eDate);
 
-			List<Storage> query = session.createQuery("select s.storage from Contract s where (s.startDate not between '"+ sDate +"' and '"+ eDate +"') and "
-					+ "(s.endDate not between '"+ sDate +"' and '"+ eDate +"')").list();
+			List<Storage> query = session
+					.createQuery("select s.storage from Contract s where (s.startDate not between '" + sDate + "' and '"
+							+ eDate + "') and " + "(s.endDate not between '" + sDate + "' and '" + eDate + "')")
+					.list();
 
-			List<Storage> noContractStorages = session.createQuery("from Storage s where s.storageID not in (select c.storage from Contract c) and "
-					+ "(s.owner = '"+ Singleton.getInstance().getOwner().getOwnerID() +"')").list();
-			
+			List<Storage> noContractStorages = session
+					.createQuery("from Storage s where s.storageID not in (select c.storage from Contract c) and "
+							+ "(s.owner = '" + Singleton.getInstance().getOwner().getOwnerID() + "')")
+					.list();
+
 			for (Storage storage : query) {
-				if(storage.getOwner() == Singleton.getInstance().getOwner()) {
+				if (storage.getOwner() == Singleton.getInstance().getOwner()) {
 					noContractStorages.add(storage);
 				}
 			}
 
-			ObservableList<Storage> dateStorageList = FXCollections.observableArrayList(noContractStorages);
+			dateStorageList = FXCollections.observableArrayList(noContractStorages);
 			System.out.println(dateStorageList);
 			storageTable.setItems(dateStorageList);
 		} else
 			storageTable.setItems(storageList);
+		
+		FilteredList<Storage> filteredData = new FilteredList<>(dateStorageList, p -> true);
+		searchStorage.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(storage -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+
+				String lowerCaseFilter = newValue.toLowerCase();
+				
+				if (storage.getStorageAddress().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (storage.getCategory().getCategoryName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (storage.getStorageType().getTypeName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (storage.getStorageStatus().toString().contains(lowerCaseFilter)) {
+					return true;
+				}
+				return false;
+			});
+		});
+
+		storageTable.getSelectionModel().getSelectedItem();
+
+		SortedList<Storage> sortedData = new SortedList<>(filteredData);
+		System.out.println(sortedData);
+		sortedData.comparatorProperty().bind(storageTable.comparatorProperty());
+		storageTable.setItems(sortedData);
 
 		session.getTransaction().commit();
 	}
@@ -301,7 +420,7 @@ public class OwnerController implements Initializable {
 	@FXML
 	Button editStorageBtn;
 
-	public void editStorage(ActionEvent event) {
+	public void editStorage() {
 		try {
 			Storage tempStorage = storageTable.getSelectionModel().getSelectedItem();
 			Singleton.getInstance().setStorage(tempStorage);
@@ -312,19 +431,85 @@ public class OwnerController implements Initializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
 
+	@FXML
+	TextField searchAgent;
+
+	@FXML
+	TableView<Agent> agentInfoTable;
+
+	@FXML
+	TableColumn<Agent, String> agNameColumn;
+
+	@FXML
+	TableColumn<Agent, String> agCommColumn;
+
+	@FXML
+	TableColumn<Agent, String> agRatingColumn;
+
+	@FXML
+	DatePicker conStDate;
+
+	@FXML
+	DatePicker conEndDate;
+
+	@FXML
+	TableView<Contract> contractsTable;
+
+	@FXML
+	TableColumn<Contract, String> storageColumn;
+
+	@FXML
+	TableColumn<Contract, String> stDateColumn;
+
+	@FXML
+	TableColumn<Contract, String> endDateColumn;
+
+	@FXML
+	TableColumn<Contract, String> renterNameColumn;
+
+	@FXML
+	Button contractInfoBtn;
+
+	public void showContractInfo() {
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("ContractInfo.fxml"));
+			Stage stage = new Stage();
+			stage.setScene(new Scene(root));
+			stage.setTitle("Contract Info");
+			stage.show();
+
+			stage.setOnCloseRequest((WindowEvent event1) -> {
+				showProfileInfo();
+			});
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void showContracts() {
+		
+	}
+	
+	@FXML
+	Tab ownedStoragesTab;
+	
+	public void onSelectOwnedStoragesTab() {
+		ownedStoragesTab.setOnSelectionChanged(e -> {
+			showOwnedStorages();
+		});
 	}
 
 	public void keyPressed(KeyEvent event) {
 
-		Control[] focusOrder = new Control[] { comboAgent, comboType, comboCategory, storageAddress, stClmConditions,
+		Control[] focusOrder = new Control[] { checkComboBox, comboType, comboCategory, storageAddress, stClmConditions,
 				storageSize, crStorageBtn };
 
 		for (int i = 0; i < focusOrder.length - 1; i++) {
 			Control nextControl = focusOrder[i + 1];
 			focusOrder[i].addEventHandler(ActionEvent.ACTION, e -> nextControl.requestFocus());
 		}
-
 	}
-
 }

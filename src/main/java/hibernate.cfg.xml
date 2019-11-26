@@ -32,6 +32,8 @@
  		<mapping class="oop2.storages.Category"/>
  		<mapping class="oop2.storages.StorageType"/>
  		<mapping class="oop2.storages.Contract"/>
+ 		<mapping class="oop2.storages.Notification"/>
+ 		
  		 		
     </session-factory>
 

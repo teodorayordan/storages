@@ -49,6 +49,15 @@ public class EditProfileController implements Initializable {
 
 	@FXML
 	CheckBox commissionCheck;
+	
+	@FXML
+	Label newNameError;
+	
+	@FXML
+	Label newPasswordError;
+	
+	@FXML
+	Label newCommissionError;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {

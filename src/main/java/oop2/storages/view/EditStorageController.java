@@ -1,14 +1,12 @@
 package oop2.storages.view;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Single;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,7 +19,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import oop2.storages.Agent;
 import oop2.storages.HibernateUtility;
+import oop2.storages.Notification;
 import oop2.storages.Storage;
+import oop2.storages.User;
 
 public class EditStorageController implements Initializable {
 	SessionFactory factory = HibernateUtility.getSessionFactory();
@@ -43,19 +43,11 @@ public class EditStorageController implements Initializable {
 
 		List<Agent> query = session.createQuery("from Agent s").list();
 		List<Agent> buf = Singleton.getInstance().getStorage().getAgentList();
-		for (Agent agent : buf) {
-			System.out.println(agent);
-			if(query.contains(agent))
-				System.out.println("ahahahahaha");
-			else
-				System.out.println("fuck you java");
-		}
 		query.removeAll(buf);
 		allAgentList = FXCollections.observableArrayList(query);
 		
 
-		// allNameColumn.setCellValueFactory(new PropertyValueFactory<Agent,
-		// String>("user.getPersonName()"));
+		allNameColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("personName"));
 		allCommissionColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("commission"));
 		allRatingColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("rating"));
 
@@ -69,9 +61,8 @@ public class EditStorageController implements Initializable {
 		session.beginTransaction();
 
 		currentAgentList = FXCollections.observableArrayList(Singleton.getInstance().getStorage().getAgentList());
-
-		//allAgentList.removeAll(currentAgentList);
-		currentNameColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("user"));
+		
+		currentNameColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("personName"));
 		currentCommissionColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("commission"));
 		currentRatingColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("rating"));
 
@@ -134,6 +125,20 @@ public class EditStorageController implements Initializable {
 
 		currentAgentList.add(agent);
 		allAgentList.remove(agent);
+		
+		//tuka dobavihme pri dobavqne na agent da mu se prashta izvestiq za svoboden sklad, ako e svoboden
+		if(tempStorage.getStorageStatus() == false) {
+			Notification noti = new Notification(agent.getUser(), (LocalDate.now() + ": Storage "+ tempStorage.getStorageAddress() +" is free for sale"));
+	
+			
+			List<Notification> notificationResult = session.createQuery("from Notification s where s.notificationStatus = 1").list();
+			System.out.println(notificationResult);
+			if(!notificationResult.contains(noti)) {
+				System.out.println(noti);
+				session.save(noti);
+			}
+			
+		}
 
 		session.getTransaction().commit();
 	}
