@@ -20,7 +20,7 @@ public class StorageType {
 
 	@Override
 	public String toString() {
-		return "StorageType [typeID=" + typeID + ", typeName=" + typeName + "]";
+		return typeName;
 	}
 
 	public StorageType(String typeName) {
@@ -39,7 +39,4 @@ public class StorageType {
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
 	}
-	
-	
-
 }

@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import oop2.storages.HibernateUtility;
@@ -22,9 +23,10 @@ public class App extends Application {
 		Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
 		primaryStage.setScene(new Scene(root));
 		primaryStage.setTitle("Login");
+		primaryStage.getIcons().add(new Image("/pictures/storage.png"));
 		primaryStage.setResizable(false);
 		primaryStage.show();
-
+//TODO vij dali trqbva toq close request
 		primaryStage.setOnCloseRequest((WindowEvent event1) -> {
 			if (Singleton.getInstance().getUser() != null) {
 				Session session = factory.getCurrentSession();

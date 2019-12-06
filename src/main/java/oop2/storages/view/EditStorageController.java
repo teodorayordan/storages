@@ -10,18 +10,19 @@ import org.hibernate.SessionFactory;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyEvent;
 import oop2.storages.Agent;
 import oop2.storages.HibernateUtility;
 import oop2.storages.Notification;
 import oop2.storages.Storage;
-import oop2.storages.User;
 
 public class EditStorageController implements Initializable {
 	SessionFactory factory = HibernateUtility.getSessionFactory();
@@ -33,11 +34,10 @@ public class EditStorageController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		showAllAgents();
 		showCurrentAgents();
-		
+
 	}
 
 	public void showAllAgents() {
-		// TODO v nachaloto ne premahva tekushti agenti sushto ne izobrazqva imena
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
@@ -45,13 +45,36 @@ public class EditStorageController implements Initializable {
 		List<Agent> buf = Singleton.getInstance().getStorage().getAgentList();
 		query.removeAll(buf);
 		allAgentList = FXCollections.observableArrayList(query);
-		
 
 		allNameColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("personName"));
 		allCommissionColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("commission"));
 		allRatingColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("rating"));
 
 		allAgentsTable.setItems(allAgentList);
+
+		FilteredList<Agent> filteredData = new FilteredList<>(allAgentList, p -> true);
+		searchAgent.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(agent -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+
+				String lowerCaseFilter = newValue.toLowerCase();
+
+				if (agent.getUser().getPersonName().toLowerCase().contains(lowerCaseFilter)) {
+					return true;
+				} else if (agent.getCommission().toString().contains(lowerCaseFilter)) {
+					return true;
+				} else if (agent.getRating().toString().contains(lowerCaseFilter)) {
+					return true;
+				}
+				return false;
+			});
+		});
+
+		SortedList<Agent> sortedData = new SortedList<>(filteredData);
+		sortedData.comparatorProperty().bind(allAgentsTable.comparatorProperty());
+		allAgentsTable.setItems(sortedData);
 
 		session.getTransaction().commit();
 	}
@@ -61,7 +84,7 @@ public class EditStorageController implements Initializable {
 		session.beginTransaction();
 
 		currentAgentList = FXCollections.observableArrayList(Singleton.getInstance().getStorage().getAgentList());
-		
+
 		currentNameColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("personName"));
 		currentCommissionColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("commission"));
 		currentRatingColumn.setCellValueFactory(new PropertyValueFactory<Agent, String>("rating"));
@@ -76,6 +99,9 @@ public class EditStorageController implements Initializable {
 
 	@FXML
 	Button addAgentBtn;
+
+	@FXML
+	TextField searchAgent;
 
 	@FXML
 	TableView<Agent> currentAgentsTable;
@@ -102,58 +128,53 @@ public class EditStorageController implements Initializable {
 	TableColumn<Agent, String> allRatingColumn;
 
 	public void removeAgent() {
-		Session session = factory.getCurrentSession();
-		session.beginTransaction();
-		Agent agent = currentAgentsTable.getSelectionModel().getSelectedItem();
-		Singleton.getInstance().getStorage().removeAgent(agent);
-		Storage tempStorage = Singleton.getInstance().getStorage();
-		session.update(tempStorage);
+		if (currentAgentsTable.getSelectionModel().getSelectedItem() != null) {
+			Session session = factory.getCurrentSession();
+			session.beginTransaction();
+			Agent agent = currentAgentsTable.getSelectionModel().getSelectedItem();
+			Singleton.getInstance().getStorage().removeAgent(agent);
+			Storage tempStorage = Singleton.getInstance().getStorage();
+			session.update(tempStorage);
 
-		currentAgentList.remove(agent);
-		allAgentList.add(agent);
+			currentAgentList.remove(agent);
+			allAgentList.add(agent);
 
-		session.getTransaction().commit();
+			session.getTransaction().commit();
+		} else
+			System.out.println("No selection!");
 	}
 
 	public void addAgent() {
-		Session session = factory.getCurrentSession();
-		session.beginTransaction();
-		Agent agent = allAgentsTable.getSelectionModel().getSelectedItem();
-		Singleton.getInstance().getStorage().addAgent(agent);
-		Storage tempStorage = Singleton.getInstance().getStorage();
-		session.update(tempStorage);
+		if (allAgentsTable.getSelectionModel().getSelectedItem() != null) {
+			Session session = factory.getCurrentSession();
+			session.beginTransaction();
+			Agent agent = allAgentsTable.getSelectionModel().getSelectedItem();
+			Singleton.getInstance().getStorage().addAgent(agent);
+			Storage tempStorage = Singleton.getInstance().getStorage();
+			session.update(tempStorage);
 
-		currentAgentList.add(agent);
-		allAgentList.remove(agent);
-		
-		//tuka dobavihme pri dobavqne na agent da mu se prashta izvestiq za svoboden sklad, ako e svoboden
-		if(tempStorage.getStorageStatus() == false) {
-			Notification noti = new Notification(agent.getUser(), (LocalDate.now() + ": Storage "+ tempStorage.getStorageAddress() +" is free for sale"));
-	
-			
-			List<Notification> notificationResult = session.createQuery("from Notification s where s.notificationStatus = 1").list();
-			System.out.println(notificationResult);
-			if(!notificationResult.contains(noti)) {
-				System.out.println(noti);
-				session.save(noti);
+			currentAgentList.add(agent);
+			allAgentList.remove(agent);
+
+			// tuka dobavihme pri dobavqne na agent da mu se prashta izvestiq za svoboden
+			// sklad, ako e svoboden
+			if (tempStorage.getStorageStatus() == false) {
+				Notification noti = new Notification(agent.getUser(),
+						(LocalDate.now() + ": Storage " + tempStorage.getStorageAddress() + " is free for sale"));
+
+				List<Notification> notificationResult = session
+						.createQuery("from Notification s where s.notificationStatus = 1").list();
+				System.out.println(notificationResult);
+				if (!notificationResult.contains(noti)) {
+					System.out.println(noti);
+					session.save(noti);
+				}
+
 			}
-			
-		}
 
-		session.getTransaction().commit();
+			session.getTransaction().commit();
+
+		} else
+			System.out.println("No problem!");
 	}
-
-	public void keyPressed(KeyEvent event) {
-
-		/*
-		 * Control[] focusOrder = new Control[] { editAgent, editType, editCategory,
-		 * editSize, editClConditions };
-		 * 
-		 * for (int i = 0; i < focusOrder.length - 1; i++) { Control nextControl =
-		 * focusOrder[i + 1]; focusOrder[i].addEventHandler(ActionEvent.ACTION, e ->
-		 * nextControl.requestFocus()); }
-		 */
-
-	}
-
 }

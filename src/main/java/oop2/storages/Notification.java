@@ -16,19 +16,19 @@ public class Notification {
 	@Column(name = "id_notification")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer notificationID = null;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "id_user", nullable = false)
 	private User user;
 
 	@Column(name = "notification_text")
 	private String notificationText;
-	
+
 	@Column(name = "notification_status")
 	private Boolean notificationStatus;
 
 	public Notification() {
-		
+
 	}
 
 	public Notification(User user, String notificationText) {
@@ -75,7 +75,6 @@ public class Notification {
 		this.notificationStatus = notificationStatus;
 	}
 
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -97,7 +96,4 @@ public class Notification {
 			return false;
 		return true;
 	}
-
-
-	
 }

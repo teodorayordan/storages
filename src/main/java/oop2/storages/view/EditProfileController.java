@@ -6,26 +6,22 @@ import java.util.ResourceBundle;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import oop2.storages.Agent;
 import oop2.storages.HibernateUtility;
 import oop2.storages.User;
+import validations.Validation;
 
 public class EditProfileController implements Initializable {
 
 	SessionFactory factory = HibernateUtility.getSessionFactory();
 
-	Session session = factory.getCurrentSession();
-	
 	@FXML
 	Button editPrBtn;
 
@@ -49,13 +45,13 @@ public class EditProfileController implements Initializable {
 
 	@FXML
 	CheckBox commissionCheck;
-	
+
 	@FXML
 	Label newNameError;
-	
+
 	@FXML
 	Label newPasswordError;
-	
+
 	@FXML
 	Label newCommissionError;
 
@@ -75,13 +71,13 @@ public class EditProfileController implements Initializable {
 		} else {
 			newName.setEditable(false);
 		}
-		
+
 		if (passwordCheck.isSelected()) {
 			newPassword.setEditable(true);
 		} else {
 			newPassword.setEditable(false);
 		}
-		
+
 		if (commissionCheck.isSelected()) {
 			newCommission.setEditable(true);
 		} else {
@@ -89,28 +85,33 @@ public class EditProfileController implements Initializable {
 		}
 	}
 
-	public void editProfile(ActionEvent event) {
+	public void editProfile() {
 		User user = Singleton.getInstance().getUser();
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
 
 		if (nameCheck.isSelected()) {
-			if (!newName.getText().isEmpty()) {
+			boolean accNameValid = Validation.textAlphabetFirstCapital(newName, newNameError,
+					"Only Letters, First Capital! Max 25!");
+			if (accNameValid) {
 				user.setPersonName(newName.getText());
 			} else
 				System.out.println("Empty fields");
-		} else if (passwordCheck.isSelected()) {
+		}
 
-			if (!newPassword.getText().isEmpty()) {
+		if (passwordCheck.isSelected()) {
+			boolean passValid = Validation.textAlphabet(newPassword, newPasswordError, "Enter Valid Password!");
+			if (passValid) {
 				user.setAccountPassword(newPassword.getText());
 			} else
 				System.out.println("Empty fields");
 		}
 
-		session.beginTransaction();
-
 		if (newCommission.isVisible()) {
 			Agent agent = Singleton.getInstance().getAgent();
 			if (commissionCheck.isSelected()) {
-				if (!newCommission.getText().isEmpty()) {
+				boolean commValid = Validation.textCommission(newCommission, newCommissionError, "Enter Number!");
+				if (commValid) {
 					agent.setCommission(Double.parseDouble(newCommission.getText()));
 					session.update(user);
 					System.out.println(agent);

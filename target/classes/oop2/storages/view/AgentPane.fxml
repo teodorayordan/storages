@@ -5,7 +5,6 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -19,21 +18,13 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="770.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="oop2.storages.view.AgentController">
    <children>
-      <TabPane prefHeight="550.0" prefWidth="770.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="550.0" prefWidth="784.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Profile Info">
                <content>
                   <BorderPane prefHeight="371.0" prefWidth="631.0">
-                     <right>
-                        <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="521.0" prefWidth="222.0" BorderPane.alignment="CENTER">
-                          <items>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="181.0" prefWidth="168.0" />
-                          </items>
-                        </SplitPane>
-                     </right>
                      <left>
-                        <AnchorPane prefHeight="521.0" prefWidth="545.0" BorderPane.alignment="CENTER">
+                        <AnchorPane prefHeight="521.0" prefWidth="470.0" BorderPane.alignment="CENTER">
                            <children>
                               <GridPane alignment="CENTER" layoutX="105.0" layoutY="116.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="290.0" prefWidth="336.0">
                                 <columnConstraints>
@@ -59,9 +50,13 @@
                                     <Label fx:id="ratingText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                  </children>
                               </GridPane>
+                              <Separator layoutX="467.0" orientation="VERTICAL" prefHeight="521.0" />
                            </children>
                         </AnchorPane>
                      </left>
+                     <right>
+                        <AnchorPane prefHeight="521.0" prefWidth="297.0" BorderPane.alignment="CENTER" />
+                     </right>
                   </BorderPane>
                </content>
           </Tab>
@@ -118,7 +113,7 @@
                      <left>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="521.0" prefWidth="376.0" BorderPane.alignment="CENTER">
                            <children>
-                                <GridPane layoutX="14.0" layoutY="39.0" prefHeight="443.0" prefWidth="349.0">
+                                <GridPane layoutX="33.0" layoutY="39.0" prefHeight="443.0" prefWidth="310.0">
                                 <columnConstraints>
                                     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="240.0" minWidth="10.0" prefWidth="132.0" />
                                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="240.0" minWidth="10.0" prefWidth="132.0" />
@@ -140,10 +135,9 @@
                                     <Button fx:id="showStBtn" mnemonicParsing="false" onAction="#showStorage" text="Storage Info" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                     <TableView fx:id="storageTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
                                       <columns>
-                                        <TableColumn fx:id="storageAddressColumn" prefWidth="119.0" text="Address" />
-                                        <TableColumn fx:id="storageCategoryColumn" prefWidth="87.0" text="Category" />
-                                          <TableColumn fx:id="storageTypeColumn" prefWidth="73.0" text="Type" />
-                                          <TableColumn fx:id="storageStatusColumn" prefWidth="70.0" text="Status" />
+                                        <TableColumn fx:id="storageAddressColumn" prefWidth="129.0" text="Address" />
+                                        <TableColumn fx:id="storageCategoryColumn" prefWidth="96.0" text="Category" />
+                                          <TableColumn fx:id="storageTypeColumn" prefWidth="82.0" text="Type" />
                                       </columns>
                                     </TableView>
                                  </children>

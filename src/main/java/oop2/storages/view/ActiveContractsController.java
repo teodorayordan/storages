@@ -20,7 +20,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import oop2.storages.Contract;
 import oop2.storages.HibernateUtility;
-import oop2.storages.Contract;
 
 public class ActiveContractsController implements Initializable {
 
@@ -60,13 +59,12 @@ public class ActiveContractsController implements Initializable {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
-		List<Contract> query = session.createQuery("from Contract s where "
-				+ "s.agent = '"
-				+ Singleton.getInstance().getAgent().getUser().getUserID() + "' and s.endDate >= '"+  LocalDate.now() +"'").list();
+		List<Contract> query = session.createQuery(
+				"from Contract s where " + "s.agent = '" + Singleton.getInstance().getAgent().getUser().getUserID()
+						+ "' and s.endDate >= '" + LocalDate.now() + "'")
+				.list();
 		contractList = FXCollections.observableArrayList(query);
 
-		// tuka definirash vuv vsqka kolona kakvo ima kato towa v skobite e imeto na
-		// promenlivata ot klasa na obekta
 		storageColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("storage"));
 		startDateColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("startDate"));
 		endDateColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("endDate"));
@@ -101,19 +99,20 @@ public class ActiveContractsController implements Initializable {
 				return false;
 			});
 		});
-		
+
 		activeContractsTable.getSelectionModel().getSelectedItem();
 
 		SortedList<Contract> sortedData = new SortedList<>(filteredData);
 		sortedData.comparatorProperty().bind(activeContractsTable.comparatorProperty());
 		activeContractsTable.setItems(sortedData);
 
-		activeContractsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-		    if (newSelection != null) {
-		        Singleton.getInstance().setContract(activeContractsTable.getSelectionModel().getSelectedItem());
-		    }
-		});
-	
+		activeContractsTable.getSelectionModel().selectedItemProperty()
+				.addListener((obs, oldSelection, newSelection) -> {
+					if (newSelection != null) {
+						Singleton.getInstance().setContract(activeContractsTable.getSelectionModel().getSelectedItem());
+					}
+				});
+
 		session.getTransaction().commit();
 	}
 }

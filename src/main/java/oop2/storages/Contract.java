@@ -43,7 +43,7 @@ public class Contract {
 
 	@Column(name = "renter_pin")
 	private String renterPin = null;
-	
+
 	@Column(name = "contract_status")
 	private Boolean contractStatus;
 
@@ -85,6 +85,10 @@ public class Contract {
 
 	public void setAgent(Agent agent) {
 		this.agent = agent;
+	}
+
+	public String getStorageAddress() {
+		return storage.getStorageAddress();
 	}
 
 	public Storage getStorage() {
@@ -142,9 +146,4 @@ public class Contract {
 	public void setContractStatus(Boolean contractStatus) {
 		this.contractStatus = contractStatus;
 	}
-	
-	
-	
-
-
 }

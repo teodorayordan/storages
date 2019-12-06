@@ -34,15 +34,7 @@ public class Owner implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Owner [ownerID=" + ownerID + ", user=" + user + "]";
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((ownerID == null) ? 0 : ownerID.hashCode());
-		return result;
+		return user + "";
 	}
 
 	@Override
@@ -93,5 +85,4 @@ public class Owner implements Serializable {
 	public void setStorageList(List<Storage> storageList) {
 		this.storageList = storageList;
 	}
-
 }

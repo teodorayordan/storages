@@ -2,10 +2,12 @@ package oop2.storages.view;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.apache.log4j.Logger;
 import org.controlsfx.control.CheckComboBox;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -21,6 +23,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -45,8 +48,7 @@ import oop2.storages.HibernateUtility;
 import oop2.storages.Notification;
 
 public class AdminController implements Initializable {
-	//TODO da se dobavi v tablicata za accounti i parola
-	
+
 	SessionFactory factory = HibernateUtility.getSessionFactory();
 	ObservableList<Category> categoryList;
 	ObservableList<StorageType> typeList;
@@ -56,6 +58,9 @@ public class AdminController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		Logger logger = Logger.getLogger(AdminController.class);
+		logger.info("Admin Logged");
+
 		loadTypeList();
 		loadCategoryList();
 		loadUsersList();
@@ -82,39 +87,69 @@ public class AdminController implements Initializable {
 		stCategories.setItems(categoryList);
 		session.getTransaction().commit();
 	}
-	
+
 	@FXML
 	GridPane gridPane;
-	
+
 	@FXML
 	CheckComboBox<Agent> checkComboBox;
-	
+
 	public void loadCreateStorage() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
 		comboOwner.setItems(ownerList);
-		
+
 		Query<Agent> agentQuery = session.createQuery("from Agent s ");
 		agentList = FXCollections.observableArrayList(agentQuery.list());
 		checkComboBox = new CheckComboBox<Agent>(agentList);
 		checkComboBox.setId("checkComboBox");
 		gridPane.add(checkComboBox, 1, 2);
-		
-		//tuka sme napravili da e po edin red zashtoto veche sa napraveni querita v loadCategory/Type
+
+		// tuka sme napravili da e po edin red zashtoto veche sa napraveni querita v
+		// loadCategory/Type
 		comboCategory.setItems(categoryList);
-		
+
 		comboType.setItems(typeList);
-		
+
 		session.getTransaction().commit();
 	}
-	
+
 	public void loadCreateContract() {
+		// TODO pri agenta se zarejdat vsichki skladove ne svobodnite
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
-		
+
 		conAgentCombo.setItems(agentList);
-				
+
+		dateContract.setDayCellFactory(picker -> new DateCell() {
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				LocalDate today = LocalDate.now();
+				setDisable(empty || date.compareTo(today) < 1);
+			}
+		});
+
+		priceContract.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (dateContract.getValue() != null && !priceContract.getText().isEmpty()) {
+				fullPrice.setText(""
+						+ Double.parseDouble(newValue) * LocalDate.now().until(dateContract.getValue(), ChronoUnit.DAYS)
+						+ "");
+			} else
+				fullPrice.clear();
+		});
+
+		dateContract.valueProperty().addListener((observable, oldValue, newValue) -> {
+			System.out.println(priceContract.getText());
+			if (dateContract.getValue() != null) {
+				if (!priceContract.getText().isEmpty()) {
+					fullPrice.setText("" + Double.parseDouble(priceContract.getText())
+							* LocalDate.now().until(newValue, ChronoUnit.DAYS) + "");
+				} else
+					fullPrice.clear();
+			}
+		});
+
 		session.getTransaction().commit();
 	}
 
@@ -154,7 +189,7 @@ public class AdminController implements Initializable {
 			}
 			usersTable.setItems(usersList);
 		}
-		
+
 		FilteredList<User> filteredData = new FilteredList<>(usersList, p -> true);
 		searchUser.textProperty().addListener((observable, oldValue, newValue) -> {
 			filteredData.setPredicate(user -> {
@@ -248,7 +283,7 @@ public class AdminController implements Initializable {
 
 	@FXML
 	TextField ownerPin;
-	
+
 	@FXML
 	Label ownAccNameError;
 
@@ -261,20 +296,20 @@ public class AdminController implements Initializable {
 	@FXML
 	Label ownerPinError;
 
-	@FXML
 	public void createOwner() {
 		String account = ownerAccountName.getText();
 		String password = ownerAccountPassword.getText();
 		String name = ownerName.getText();
 		String pin = ownerPin.getText();
 
-		boolean accNameValid = Validation.textAlphabet(ownerAccountName, ownAccNameError, "Max 25!");
-		boolean passValid = Validation.textAlphabet(ownerAccountPassword, ownAccPassError, "Max 25!");
+		boolean accNameValid = Validation.textAlphabet(ownerAccountName, ownAccNameError, "Enter Valid Account Name!");
+		boolean passValid = Validation.textAlphabet(ownerAccountPassword, ownAccPassError, "Enter Valid Password!");
 		boolean nameValid = Validation.textAlphabetFirstCapital(ownerName, ownerNameError,
 				"Only Letters, First Capital! Max 25!");
 		boolean pinValid = Validation.textPin(ownerPin, ownerPinError, "Only Numbers! Must Be 10!");
-		
-		if(accNameValid && passValid && nameValid && pinValid) {
+
+		if (accNameValid && passValid && nameValid && pinValid) {
+
 			System.out.println(account + password + name + pin);
 
 			User tempUser = new User(account, password, name, pin);
@@ -293,27 +328,35 @@ public class AdminController implements Initializable {
 				session.save(tempUser);
 				Owner tempOwner = new Owner(tempUser);
 				session.save(tempOwner);
-				
+
+				// dobavqne i zapisvane v log faila
+				ownerList.add(tempOwner);
+				usersList.add(tempUser);
+
+				Logger logger = Logger.getLogger(AdminController.class);
+				logger.info("Admin created owner " + tempOwner.getUser().getAccountName() + " "
+						+ tempOwner.getUser().getAccountPassword());
+
 				ownerAccountName.clear();
 				ownerAccountPassword.clear();
 				ownerName.clear();
 				ownerPin.clear();
-				
-				ownerList.add(tempOwner);
 			} else {
-				// ne znam dali raboti
-				if (checkUser.getAccountName().equals(account))
+				if (checkUser.getAccountName().equals(account)) {
 					System.out.println("Account name Duplicate");
-				else if (checkUser.getPin().equals(pin))
+					ownAccNameError.setText("Account already exists");
+				} else if (checkUser.getPin().equals(pin)) {
 					System.out.println("PIN Duplicate");
-				else
-					System.out.println("Account name and PIN Duplicate");
+					ownerPinError.setText("There's a person with this PIN");
+				}
 			}
 
 			// commit transaction
 			session.getTransaction().commit();
-		} else
-			System.out.println("Dont leave empty fields");
+
+		} else {
+			System.out.println("Don't leave empty fields!");
+		}
 	}
 
 	@FXML
@@ -349,30 +392,27 @@ public class AdminController implements Initializable {
 	@FXML
 	Button crAgBtn;
 
-	@FXML
 	public void createAgent() {
 		String account = agentAccountName.getText();
 		String password = agentAccountPassword.getText();
 		String name = agentName.getText();
 		String pin = agentPin.getText();
-		
-		
+
 		boolean accNameValid = Validation.textAlphabet(agentAccountName, agAccNameError, "Max 25!");
 		boolean passValid = Validation.textAlphabet(agentAccountPassword, agAccPassError, "Max 25!");
 		boolean nameValid = Validation.textAlphabetFirstCapital(agentName, agNameError,
-				"Only Letters, Two Names, First Capital, Max 25!");
+				"Only Letters, First Capital, Max 25!");
 		boolean pinValid = Validation.textPin(agentPin, agPinError, "Only Numbers, Must Be 10!");
 		boolean commissionValid = Validation.textCommission(agentCommission, agCommissionError, "Enter Number!");
 
 		if (accNameValid && passValid && nameValid && pinValid && commissionValid) {
-			
-			
+			Double commission = Double.parseDouble(agentCommission.getText());
 			System.out.println(account + password + name + pin);
 
 			User tempUser = new User(account, password, name, pin);
+			Agent tempAgent = new Agent(tempUser, commission);
 
 			Session session = factory.getCurrentSession();
-
 			session.beginTransaction();
 
 			User checkUser = (User) session
@@ -383,29 +423,34 @@ public class AdminController implements Initializable {
 
 			if (checkUser == null) {
 				session.save(tempUser);
-
-				Agent tempAgent = new Agent(tempUser, Double.parseDouble(agentCommission.getText()));
 				session.save(tempAgent);
-				
+
+				// dobavqne v spisuka i zapisvane v log faila
+				agentList.add(tempAgent);
+				usersList.add(tempUser);
+
+				Logger logger = Logger.getLogger(AdminController.class);
+				logger.info("Admin created agent " + tempAgent.getUser().getAccountName() + " "
+						+ tempAgent.getUser().getAccountPassword());
+
 				agentAccountName.clear();
 				agentAccountPassword.clear();
 				agentName.clear();
 				agentPin.clear();
 				agentCommission.clear();
-				
-				agentList.add(tempAgent);
 			} else {
-				// pak ne znam dali raboti
-				if (checkUser.getAccountName().equals(account))
+				if (checkUser.getAccountName().equals(account)) {
 					System.out.println("Account name Duplicate");
-				else if (checkUser.getPin().equals(pin))
+					agAccNameError.setText("Account already exists");
+				} else if (checkUser.getPin().equals(pin)) {
 					System.out.println("PIN Duplicate");
-				else
-					System.out.println("Account name and PIN Duplicate");
+					agPinError.setText("There's a person with this PIN");
+				}
 			}
 
 			// commit transaction
 			session.getTransaction().commit();
+
 		} else
 			System.out.println("Dont leave empty fields");
 
@@ -422,34 +467,35 @@ public class AdminController implements Initializable {
 
 	@FXML
 	Label categoryText;
-	
+
 	@FXML
 	Label categoryError;
 
-	@FXML
 	public void addCategory() {
-		boolean categoryValid = Validation.textLetters(storageCategory, categoryError, "Only Letters, First Capital!");
-		
-		Session session = factory.getCurrentSession();
-		session.beginTransaction();
-		String category = storageCategory.getText();
+		boolean categoryValid = Validation.textLetters(storageCategory, categoryError, "Only Letters, Max 30!");
+		if (categoryValid) {
+			Session session = factory.getCurrentSession();
+			session.beginTransaction();
+			String category = storageCategory.getText();
 
-		Category cat = (Category) session.createQuery("from Category s where s.categoryName='" + category + "'")
-				.uniqueResult();
+			Category cat = (Category) session.createQuery("from Category s where s.categoryName='" + category + "'")
+					.uniqueResult();
 
-		if (cat == null && categoryValid) {
-			categoryError.setVisible(false);
-			Category tempCategory = new Category(category);
-			categoryList.add(tempCategory);
-			session.save(tempCategory);
-			
-		} else {
-			categoryText.setVisible(true);
+			if (cat == null) {
+				Category tempCategory = new Category(category);
+				categoryList.add(tempCategory);
+				session.save(tempCategory);
 
+				// tuka dobavqme v log faila
+				Logger logger = Logger.getLogger(AdminController.class);
+				logger.info("Admin created category " + tempCategory.getCategoryName());
+
+				storageCategory.clear();
+			} else {
+				categoryError.setText("Such category already exists!");
+			}
+			session.getTransaction().commit();
 		}
-
-		// commit transaction
-		session.getTransaction().commit();
 	}
 
 	@FXML
@@ -463,28 +509,37 @@ public class AdminController implements Initializable {
 
 	@FXML
 	Label typeText;
-	
-	
+
 	@FXML
 	Label typeError;
 
 	@FXML
 	public void addType() {
-		Session session = factory.getCurrentSession();
-		session.beginTransaction();
-		String type = storageType.getText();
+		boolean typeValid = Validation.textLetters(storageType, typeError, "Only Letters, Max 30!");
+		if (typeValid) {
+			Session session = factory.getCurrentSession();
+			session.beginTransaction();
+			String type = storageType.getText();
 
-		StorageType ty = (StorageType) session.createQuery("from StorageType s where s.typeName='" + type + "'")
-				.uniqueResult();
-		if (ty == null) {
-			StorageType tempType = new StorageType(type);
-			typeList.add(tempType);
-			session.save(tempType);
-		} else {
-			typeText.setVisible(true);
+			StorageType ty = (StorageType) session.createQuery("from StorageType s where s.typeName='" + type + "'")
+					.uniqueResult();
+
+			if (ty == null) {
+				StorageType tempType = new StorageType(type);
+				typeList.add(tempType);
+				session.save(tempType);
+
+				// tuka dobavqme v log faila
+				Logger logger = Logger.getLogger(AdminController.class);
+				logger.info("Admin created type " + tempType.getTypeName());
+
+				storageType.clear();
+			} else {
+				typeError.setText("Such type already exists!");
+			}
+
+			session.getTransaction().commit();
 		}
-
-		session.getTransaction().commit();
 	}
 
 	@FXML
@@ -510,7 +565,7 @@ public class AdminController implements Initializable {
 
 	@FXML
 	ComboBox<Category> comboCategory;
-	
+
 	@FXML
 	Label stOwnerError;
 
@@ -532,52 +587,74 @@ public class AdminController implements Initializable {
 	@FXML
 	Label stSizeError;
 
+	public void createStorage() {
+		boolean addressValid = Validation.textAddress(storageAddress, stAddressError, "Enter Valid Address!");
+		boolean clmCondValid = Validation.textAddress(stClmConditions, clmCondError, "Enter Valid Conditions!");
+		boolean sizeValid = Validation.textCommission(storageSize, stSizeError, "Enter Valid Size!");
+		boolean ownerValid = Validation.textCombo(comboOwner, stOwnerError, "Select Owner!");
+		boolean typeValid = Validation.textCombo(comboType, stTypeError, "Select Type!");
+		boolean categoryValid = Validation.textCombo(comboCategory, stCategoryError, "Select Category!");
 
-	public void createStorage(ActionEvent event) {
-		 Session session = factory.getCurrentSession();
-		 session.beginTransaction();
-		 
-		Owner owner = comboOwner.getValue();
-		ObservableList<Agent> agentList = FXCollections.observableArrayList( checkComboBox.getCheckModel().getCheckedItems());
-		StorageType chosenType = (StorageType) comboType.getValue();
-		Category chosenCategory = (Category) comboCategory.getValue();
-		String storageAdr = storageAddress.getText();
-		String climateConditions = stClmConditions.getText();
-		Double storageSze = Double.parseDouble(storageSize.getText().toString());
+		if (addressValid && clmCondValid && sizeValid && ownerValid && typeValid && categoryValid) {
+			Session session = factory.getCurrentSession();
+			session.beginTransaction();
 
-		 
-		Storage tempStorage = new Storage(owner, chosenType,
-		chosenCategory, storageSze, climateConditions, storageAdr, agentList);
-		
-		//tuka dobavihme izvestie kogato se suzdade da se izprati izvestiq kum agentite
-		ObservableList<Notification> notificationList = FXCollections.observableArrayList();
-				
-		for (Agent agent : agentList) {
-			Notification noti = new Notification(agent.getUser(), (LocalDate.now() + ": Storage "+ tempStorage.getStorageAddress() +" is free for sale"));
-			notificationList.add(noti);
-		}
-				
-		List<Notification> notificationResult = session.createQuery("from Notification s where s.notificationStatus = 1").list();
-		System.out.println(notificationResult);
-		for (Notification notification : notificationList) {
-			if(!notificationResult.contains(notification))
-				System.out.println(notification);
+			Owner owner = comboOwner.getValue();
+			ObservableList<Agent> agentList = FXCollections
+					.observableArrayList(checkComboBox.getCheckModel().getCheckedItems());
+			StorageType chosenType = (StorageType) comboType.getValue();
+			Category chosenCategory = (Category) comboCategory.getValue();
+			String storageAdr = storageAddress.getText();
+			String climateConditions = stClmConditions.getText();
+			Double storageSze = Double.parseDouble(storageSize.getText().toString());
+
+			Storage tempStorage = new Storage(owner, chosenType, chosenCategory, storageSze, climateConditions,
+					storageAdr, agentList);
+
+			// tuka dobavihme izvestie kogato se suzdade da se izprati izvestiq kum agentite
+			ObservableList<Notification> notificationList = FXCollections.observableArrayList();
+
+			for (Agent agent : agentList) {
+				Notification noti = new Notification(agent.getUser(),
+						(LocalDate.now() + ": Storage " + tempStorage.getStorageAddress() + " is free for sale"));
+				notificationList.add(noti);
+			}
+
+			List<Notification> notificationResult = session
+					.createQuery("from Notification s where s.notificationStatus = 1").list();
+			System.out.println(notificationResult);
+			for (Notification notification : notificationList) {
+				if (!notificationResult.contains(notification))
+					System.out.println(notification);
 				session.save(notification);
+			}
+
+			System.out.println(tempStorage);
+
+			session.save(tempStorage);
+
+			// tuka dobavqme v log faila
+			Logger logger = Logger.getLogger(AdminController.class);
+			logger.info("Admin created storage " + tempStorage.getStorageID() + " " + tempStorage.getStorageAddress());
+
+			comboOwner.setValue(null);
+			checkComboBox.getCheckModel().clearChecks();
+			comboType.setValue(null);
+			comboCategory.setValue(null);
+			storageAddress.clear();
+			stClmConditions.clear();
+			storageSize.clear();
+
+			session.getTransaction().commit();
 		}
-		  
-		System.out.println(tempStorage);
-		  
-		session.save(tempStorage);
-		 
-		session.getTransaction().commit();
 	}
-	
+
 	@FXML
 	ComboBox<Agent> conAgentCombo;
-	
+
 	@FXML
 	ComboBox<Storage> storageCombo;
-	
+
 	@FXML
 	TextField renterName;
 
@@ -610,104 +687,88 @@ public class AdminController implements Initializable {
 
 	@FXML
 	Label conAgentError;
-	
+
 	public void selectAgent() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 		Agent chosenAgent = conAgentCombo.getValue();
-		System.out.println("wabalaba dub dub");
-		
-		Agent agent = (Agent) session.createQuery("from Agent s where s.agentID = '"+ chosenAgent.getAgentID() +"' ").uniqueResult();
-		ObservableList<Storage> storageList = FXCollections.observableArrayList(agent.getStorageList());
-		storageCombo.setItems(storageList);
-		
+
+		if (chosenAgent != null) {
+			Agent agent = (Agent) session
+					.createQuery("from Agent s where s.agentID = '" + chosenAgent.getAgentID() + "' ").uniqueResult();
+			ObservableList<Storage> storageList = FXCollections.observableArrayList(agent.getStorageList());
+			List<Storage> availableStorages = new ArrayList<>();
+			for (Storage storage : storageList) {
+				if (storage.getStorageStatus() == false)
+					availableStorages.add(storage);
+			}
+
+			storageCombo.getItems().setAll(availableStorages);
+		}
+
 		session.getTransaction().commit();
 	}
 
 	public void createContract() {
-		Session session = factory.getCurrentSession();
-		session.beginTransaction();
-		
-		Agent chosenAgent = conAgentCombo.getValue();
-		
-		comboAgent.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+		boolean agentValid = Validation.textCombo(conAgentCombo, conAgentError, "Select Agent!");
+		boolean storageValid = Validation.textCombo(storageCombo, chStorageError, "Select Storage!");
+		boolean renterNameValid = Validation.textAlphabetFirstCapital(renterName, renterNameError,
+				"Only Letters, First Capital! Max 25!");
+		boolean renterPinValid = Validation.textPin(renterPin, renterPinError, "Only Numbers! Must be 10!");
+		boolean endDateValid = Validation.textDate(dateContract, contrEndDateError, "Choose Date!");
+		boolean dayPriceValid = Validation.textCommission(priceContract, stSinglePriceError, "Enter Valid Price!");
 
-		});
-		
-		Storage choosenStorage = storageCombo.getValue();
-		String renterNme = renterName.getText();
-		String renterPn = renterPin.getText();
-		LocalDate endDate = dateContract.getValue();
-		Double pricePerMonth = Double.parseDouble(priceContract.getText());
+		if (agentValid && storageValid && renterNameValid && renterPinValid && endDateValid && dayPriceValid) {
+			Session session = factory.getCurrentSession();
+			session.beginTransaction();
 
-		if (choosenStorage.getStorageStatus() == false) {
-			Contract contract = new Contract(chosenAgent, choosenStorage, null, endDate,
-					pricePerMonth, renterNme, renterPn);
-			
-			Storage tempStorage = choosenStorage;
-			tempStorage.setStorageStatus(true);
-			System.out.println(tempStorage);
-			System.out.println(tempStorage.getStorageStatus());
-			session.update(tempStorage);
-			session.save(contract);
-		} else {
-			System.out.println("Storage is already rented");
-		}
-		
-		session.getTransaction().commit();
-	}
+			Agent chosenAgent = conAgentCombo.getValue();
 
-	/*@FXML
-	Button openPrBtn;
+			Storage choosenStorage = storageCombo.getValue();
+			String renterNme = renterName.getText();
+			String renterPn = renterPin.getText();
+			LocalDate endDate = dateContract.getValue();
+			Double pricePerMonth = Double.parseDouble(priceContract.getText());
 
-	public void openProfile(ActionEvent event) {
-		Session session = factory.getCurrentSession();
-		session.beginTransaction();
-		User tempUser = usersTable.getSelectionModel().getSelectedItem();
-		Singleton.getInstance().setUser(tempUser);
-		System.out.println(tempUser);
+			if (choosenStorage.getStorageStatus() == false) {
+				Contract contract = new Contract(chosenAgent, choosenStorage, null, endDate.plusDays(1), pricePerMonth,
+						renterNme, renterPn);
 
-		if (showAgRadio.isSelected()) {
-			try {
-				Agent agent  = (Agent) session.createQuery(
-						"from Agent s where id_storage_agent='" + tempUser.getUserID() + "'")
-						.uniqueResult();
-				
-				Singleton.getInstance().setAgent(agent);
-				session.getTransaction().commit();
+				Storage tempStorage = choosenStorage;
+				tempStorage.setStorageStatus(true);
 
-				Parent root = FXMLLoader.load(getClass().getResource("AgentPane.fxml"));
-				Stage stage = new Stage();
-				stage.setScene(new Scene(root));
-				stage.setTitle("Agent Profile");
-				stage.show();
-			} catch (Exception e) {
-				e.printStackTrace();
+				// tuka dobavihme notification za otdaden sklad
+				Notification noti = new Notification(choosenStorage.getOwner().getUser(),
+						(LocalDate.now() + ": Storage " + tempStorage.getStorageAddress() + " is now rented"));
+
+				System.out.println(noti);
+				session.save(noti);
+
+				System.out.println(tempStorage);
+				System.out.println(tempStorage.getStorageStatus());
+				session.update(tempStorage);
+				session.save(contract);
+
+				// tuka dobavqme v log faila
+				Logger logger = Logger.getLogger(AdminController.class);
+				logger.info("Admin created contract with ID: " + contract.getContractID());
+
+				storageCombo.setValue(null);
+				renterName.clear();
+				renterPin.clear();
+				dateContract.setValue(null);
+				priceContract.clear();
+
+			} else {
+				System.out.println("Storage is already rented");
 			}
-		} else if (showOwnRadio.isSelected()) {
-			try {
-				Owner owner  = (Owner) session.createQuery(
-						"from Owner s where id_owner='" + tempUser.getUserID() + "'")
-						.uniqueResult();
 
-				Singleton.getInstance().setOwner(owner);
-				session.getTransaction().commit();
-				
-				Parent root = FXMLLoader.load(getClass().getResource("OwnerPane.fxml"));
-				Stage stage = new Stage();
-				stage.setScene(new Scene(root));
-				stage.setTitle("Owner Profile");
-				stage.show();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else  {
-			System.out.println("Something went wrong");
 			session.getTransaction().commit();
+			// slagame go nakraq poneje shte izvika eventa i shte ima transaction already
+			// active
+			conAgentCombo.setValue(null);
 		}
-		
-		
-	}*/
+	}
 
 	public void keyPressed(KeyEvent event) {
 

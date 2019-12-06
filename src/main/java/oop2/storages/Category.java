@@ -21,7 +21,7 @@ public class Category {
 
 	@Override
 	public String toString() {
-		return "Category [categoryID=" + categoryID + ", categoryName=" + categoryName + "]";
+		return categoryName;
 	}
 
 	public Category(String categoryName) {
@@ -40,6 +40,4 @@ public class Category {
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
-	
-	
 }

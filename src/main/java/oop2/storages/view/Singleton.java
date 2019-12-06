@@ -6,7 +6,6 @@ import oop2.storages.Owner;
 import oop2.storages.Storage;
 import oop2.storages.User;
 
-
 public class Singleton {
 	private static Singleton instance = new Singleton();
 
@@ -59,7 +58,4 @@ public class Singleton {
 	public void setContract(Contract contract) {
 		this.contract = contract;
 	}
-	
-	
-
 }

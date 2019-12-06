@@ -38,9 +38,9 @@
             <CheckBox fx:id="nameCheck" mnemonicParsing="false" onAction="#enableEdit" />
             <CheckBox fx:id="passwordCheck" mnemonicParsing="false" onAction="#enableEdit" GridPane.rowIndex="2" />
             <CheckBox fx:id="commissionCheck" mnemonicParsing="false" onAction="#enableEdit" visible="false" GridPane.rowIndex="4" />
-            <Label fx:id="newNameError" text="Label" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Label fx:id="newPasswordError" text="Label" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <Label fx:id="newCommissionError" text="Label" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <Label fx:id="newNameError" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label fx:id="newPasswordError" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Label fx:id="newCommissionError" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="5" />
          </children>
       </GridPane>
    </children>

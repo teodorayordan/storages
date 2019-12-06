@@ -72,7 +72,7 @@ public class AllContractsController implements Initializable {
 				.list();
 		contractList = FXCollections.observableArrayList(query);
 
-		storageColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("storage"));
+		storageColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("storageAddress"));
 		startDateColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("startDate"));
 		endDateColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("endDate"));
 		renterNameColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("renterName"));

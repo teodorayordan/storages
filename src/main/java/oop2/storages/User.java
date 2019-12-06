@@ -10,6 +10,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 
+import oop2.storages.view.Singleton;
+
 @Entity
 @Table(name = "user")
 public class User {
@@ -86,7 +88,7 @@ public class User {
 	public String getAccountName() {
 		return accountName;
 	}
-	
+
 	public Boolean getStatusLogin() {
 		return statusLogin;
 	}
@@ -97,12 +99,9 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [userID=" + userID + ", accountName=" + accountName + ", accountPassword=" + accountPassword
-				+ ", personName=" + personName + ", pin=" + pin + ", statusLogin=" + statusLogin + "]";
+		if (Singleton.getInstance().getUser() == null) {
+			return "Account Name: " + accountName + ", Name: " + personName;
+		} else
+			return personName;
 	}
-
-
-
-
-
 }

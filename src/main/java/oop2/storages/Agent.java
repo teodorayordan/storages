@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapsId;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -42,18 +41,8 @@ public class Agent implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Agent [user=" + user + ", commission=" + commission + ", rating=" + rating + "]";
+		return user + ", Commission: " + commission + ", Rating: " + rating;
 	}
-	
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((agentID == null) ? 0 : agentID.hashCode());
-		return result;
-	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -72,16 +61,15 @@ public class Agent implements Serializable {
 		return true;
 	}
 
-
 	public Agent() {
-		setRating();
+
 	}
 
 	public Agent(User user, Double commission) {
 		super();
 		this.user = user;
 		this.commission = commission;
-		setRating();
+		this.rating = 3.0;
 	}
 
 	public Integer getAgentID() {
@@ -112,8 +100,8 @@ public class Agent implements Serializable {
 		return rating;
 	}
 
-	public void setRating() {
-		this.rating = 5.0;
+	public void setRating(double rating) {
+		this.rating = rating;
 	}
 
 	public List<Storage> getStorageList() {
@@ -123,9 +111,8 @@ public class Agent implements Serializable {
 	public void setStorageList(List<Storage> storageList) {
 		this.storageList = storageList;
 	}
-	
+
 	public String getPersonName() {
 		return user.getPersonName();
 	}
-
 }

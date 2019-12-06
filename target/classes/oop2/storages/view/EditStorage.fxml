@@ -59,16 +59,16 @@
             </AnchorPane>
             <TableView fx:id="currentAgentsTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
               <columns>
-                <TableColumn fx:id="currentNameColumn" prefWidth="68.0" text="Name" />
-                <TableColumn fx:id="currentCommissionColumn" text="Commission" />
-                  <TableColumn fx:id="currentRatingColumn" prefWidth="69.0" text="Rating" />
+                <TableColumn fx:id="currentNameColumn" prefWidth="92.0" text="Name" />
+                <TableColumn fx:id="currentCommissionColumn" prefWidth="74.0" text="Commission" />
+                  <TableColumn fx:id="currentRatingColumn" prefWidth="49.0" text="Rating" />
               </columns>
             </TableView>
             <TableView fx:id="allAgentsTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
               <columns>
-                <TableColumn fx:id="allNameColumn" prefWidth="68.0" text="Name" />
-                <TableColumn fx:id="allCommissionColumn" text="Commission" />
-                  <TableColumn fx:id="allRatingColumn" prefWidth="69.0" text="Rating" />
+                <TableColumn fx:id="allNameColumn" prefWidth="92.0" text="Name" />
+                <TableColumn fx:id="allCommissionColumn" prefWidth="74.0" text="Commission" />
+                  <TableColumn fx:id="allRatingColumn" prefWidth="49.0" text="Rating" />
               </columns>
             </TableView>
             <Label text="Search Agent" GridPane.rowIndex="1" />

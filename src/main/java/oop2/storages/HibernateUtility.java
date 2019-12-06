@@ -6,11 +6,11 @@ import org.hibernate.cfg.Configuration;
 public class HibernateUtility {
 
 	public static SessionFactory factory;
-	//to disallow creating objects by other classes.
+	// to disallow creating objects by other classes.
 
 	private HibernateUtility() {
 	}
-	//maling the Hibernate SessionFactory object as singleton
+	// maling the Hibernate SessionFactory object as singleton
 
 	public static synchronized SessionFactory getSessionFactory() {
 

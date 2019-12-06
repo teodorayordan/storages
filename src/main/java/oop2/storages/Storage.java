@@ -13,6 +13,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -56,6 +57,9 @@ public class Storage {
 			@JoinColumn(name = " id_storage_agent") })
 	private List<Agent> agentList;
 
+	@Transient
+	private Boolean statusByDate;
+
 	public Storage(Owner owner, StorageType storageType, Category category, Double storageSize,
 			String climateConditions, String storageAddress, List<Agent> agentList) {
 		super();
@@ -71,14 +75,6 @@ public class Storage {
 
 	public Storage() {
 
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((storageID == null) ? 0 : storageID.hashCode());
-		return result;
 	}
 
 	@Override
@@ -178,20 +174,16 @@ public class Storage {
 		this.agentList.remove(agent);
 	}
 
-	@Override
-	public String toString() {
-		return "Storage [storageID=" + storageID + ", owner=" + owner + ", storageType=" + storageType + ", category="
-				+ category + ", storageSize=" + storageSize + ", climateConditions=" + climateConditions
-				+ ", storageAddress=" + storageAddress + ", storageStatus=" + storageStatus + ", agentList=" + agentList
-				+ "]";
+	public Boolean getStatusByDate() {
+		return statusByDate;
 	}
 
-	/*
-	 * @Override public String toString() { return "Storage [storageID=" + storageID
-	 * + ", owner=" + owner + ", agent=" + agent + ", storageType=" + storageType +
-	 * ", category=" + category + ", storageSize=" + storageSize +
-	 * ", climateConditions=" + climateConditions + ", storageAddress=" +
-	 * storageAddress + ", storageStatus=" + storageStatus + "]"; }
-	 */
+	public void setStatusByDate(Boolean statusByDate) {
+		this.statusByDate = statusByDate;
+	}
 
+	@Override
+	public String toString() {
+		return storageAddress + ", Category: " + category + ", Type: " + storageType + ", Size: " + storageSize;
+	}
 }
