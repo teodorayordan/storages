@@ -68,6 +68,7 @@ public class AdminController implements Initializable {
 		loadCreateContract();
 	}
 
+	//zarejdave na spisuk s tipove sklad
 	public void loadTypeList() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -78,6 +79,7 @@ public class AdminController implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	//zarejdane spisuk s kategorii skladove
 	public void loadCategoryList() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -94,6 +96,7 @@ public class AdminController implements Initializable {
 	@FXML
 	CheckComboBox<Agent> checkComboBox;
 
+	//zarejdnae na poletata za suzdavane na sklad
 	public void loadCreateStorage() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -115,8 +118,8 @@ public class AdminController implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	//zarejdane na poletata za suzdavane na dogovor
 	public void loadCreateContract() {
-		// TODO pri agenta se zarejdat vsichki skladove ne svobodnite
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
@@ -174,6 +177,7 @@ public class AdminController implements Initializable {
 	@FXML
 	RadioButton showOwnRadio;
 
+	//nachalno nastroivane na taba s profili
 	public void showProfiles() {
 
 		if (showAgRadio.isSelected()) {
@@ -218,6 +222,7 @@ public class AdminController implements Initializable {
 
 	}
 
+	//zarejdane na taba s profili
 	public void loadUsersList() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -296,6 +301,7 @@ public class AdminController implements Initializable {
 	@FXML
 	Label ownerPinError;
 
+	//suzdavane na profil na sobstvenik
 	public void createOwner() {
 		String account = ownerAccountName.getText();
 		String password = ownerAccountPassword.getText();
@@ -392,6 +398,7 @@ public class AdminController implements Initializable {
 	@FXML
 	Button crAgBtn;
 
+	//suzdavane na profil na agent
 	public void createAgent() {
 		String account = agentAccountName.getText();
 		String password = agentAccountPassword.getText();
@@ -471,6 +478,7 @@ public class AdminController implements Initializable {
 	@FXML
 	Label categoryError;
 
+	//dobavane na kategoriq
 	public void addCategory() {
 		boolean categoryValid = Validation.textLetters(storageCategory, categoryError, "Only Letters, Max 30!");
 		if (categoryValid) {
@@ -513,7 +521,7 @@ public class AdminController implements Initializable {
 	@FXML
 	Label typeError;
 
-	@FXML
+	//dobavanq na tip sklad
 	public void addType() {
 		boolean typeValid = Validation.textLetters(storageType, typeError, "Only Letters, Max 30!");
 		if (typeValid) {
@@ -587,6 +595,7 @@ public class AdminController implements Initializable {
 	@FXML
 	Label stSizeError;
 
+	//suzdavane na sklad
 	public void createStorage() {
 		boolean addressValid = Validation.textAddress(storageAddress, stAddressError, "Enter Valid Address!");
 		boolean clmCondValid = Validation.textAddress(stClmConditions, clmCondError, "Enter Valid Conditions!");
@@ -688,6 +697,7 @@ public class AdminController implements Initializable {
 	@FXML
 	Label conAgentError;
 
+	//pri izbor na agent se zadava da izlizat negovite skladove v comboboxa za izbor na sklad
 	public void selectAgent() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -709,6 +719,7 @@ public class AdminController implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	//suzdavane na dogovor
 	public void createContract() {
 		boolean agentValid = Validation.textCombo(conAgentCombo, conAgentError, "Select Agent!");
 		boolean storageValid = Validation.textCombo(storageCombo, chStorageError, "Select Storage!");

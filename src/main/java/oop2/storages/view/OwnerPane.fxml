@@ -23,13 +23,13 @@
           <Tab text="Profile Info">
                <content>
                   <BorderPane prefHeight="527.0" prefWidth="772.0">
-                     <left>
+                     <center>
                         <AnchorPane prefHeight="521.0" prefWidth="470.0" BorderPane.alignment="CENTER">
                            <children>
-                              <GridPane layoutX="99.0" layoutY="116.0" prefHeight="289.0" prefWidth="347.0">
+                              <GridPane layoutX="190.0" layoutY="116.0" prefHeight="289.0" prefWidth="404.0">
                                 <columnConstraints>
-                                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="251.0" minWidth="10.0" prefWidth="243.0" />
+                                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="197.0" minWidth="10.0" prefWidth="167.0" />
                                 </columnConstraints>
                                 <rowConstraints>
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -41,16 +41,12 @@
                                     <Label fx:id="nameText" text="Label" GridPane.columnIndex="1" />
                                     <Label text="Account Name" GridPane.rowIndex="1" />
                                     <Label fx:id="accountNameText" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Button fx:id="editPrBtn" mnemonicParsing="false" onAction="#editProfile" text="Edit Profile" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" />
+                                    <Button fx:id="editPrBtn" mnemonicParsing="false" onAction="#editProfile" text="Edit Profile" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                                  </children>
                               </GridPane>
-                              <Separator layoutX="467.0" orientation="VERTICAL" prefHeight="521.0" prefWidth="0.0" />
                            </children>
                         </AnchorPane>
-                     </left>
-                     <right>
-                        <AnchorPane prefHeight="521.0" prefWidth="297.0" BorderPane.alignment="CENTER" />
-                     </right>
+                     </center>
                   </BorderPane>
                </content>
           </Tab>

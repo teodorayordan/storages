@@ -20,13 +20,13 @@ public class App extends Application {
 		// create session factory
 		SessionFactory factory = HibernateUtility.getSessionFactory();
 
+		//zarejdane na login prozoreca
 		Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
 		primaryStage.setScene(new Scene(root));
 		primaryStage.setTitle("Login");
 		primaryStage.getIcons().add(new Image("/pictures/storage.png"));
 		primaryStage.setResizable(false);
 		primaryStage.show();
-//TODO vij dali trqbva toq close request
 		primaryStage.setOnCloseRequest((WindowEvent event1) -> {
 			if (Singleton.getInstance().getUser() != null) {
 				Session session = factory.getCurrentSession();

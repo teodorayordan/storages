@@ -94,11 +94,13 @@ public class OwnerController implements Initializable {
 		showAvailableStorages();
 	}
 
+	//zarejdane na informaciq za profila
 	public void showProfileInfo() {
 		nameText.setText(Singleton.getInstance().getOwner().getUser().getPersonName());
 		accountNameText.setText(Singleton.getInstance().getOwner().getUser().getAccountName());
 	}
 
+	//populvane na tablica sus skladove na koito e sobstvenik
 	public void showOwnedStorages() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -149,6 +151,7 @@ public class OwnerController implements Initializable {
 	@FXML
 	CheckComboBox<Agent> checkComboBox;
 
+	//funkciq za zarejdane na poletata za suzdavane na sklad
 	public void loadCreateStorage() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -170,6 +173,7 @@ public class OwnerController implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	//funkciq za pokazvane na izvestiqta za suotvetniq profil
 	public void showNotifications() {
 		Runnable task = new Runnable() {
 			@Override
@@ -202,6 +206,7 @@ public class OwnerController implements Initializable {
 		scheduler.scheduleAtFixedRate(task, 3, 10, TimeUnit.SECONDS);
 	}
 
+	//funkciq za zarejdane na vsichki naeti agenti za skladovete na sobstvenika
 	public void loadOwnerAgents() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -264,6 +269,7 @@ public class OwnerController implements Initializable {
 	@FXML
 	Label accountNameText;
 
+	//funkciq za pokazvane na prozorec za redaktirane na profil
 	public void editProfile() {
 
 		try {
@@ -324,6 +330,7 @@ public class OwnerController implements Initializable {
 	@FXML
 	Label stSizeError;
 
+	//suzdavane na sklad
 	public void createStorage() {
 
 		boolean addressValid = Validation.textAddress(storageAddress, stAddressError, "Enter Valid Address!");
@@ -397,8 +404,8 @@ public class OwnerController implements Initializable {
 	@FXML
 	DatePicker endDate;
 
+	//pokazvane na koi skaldove sa svobodni i koi ne za daden period
 	public void showAvailableStorages() {
-		// TODO testove
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
@@ -488,6 +495,7 @@ public class OwnerController implements Initializable {
 	@FXML
 	Button editStorageBtn;
 
+	//pokazvane na prozorec za redaktirane na sklad
 	public void editStorage() {
 		if (storageTable.getSelectionModel().getSelectedItem() != null) {
 			try {
@@ -518,6 +526,7 @@ public class OwnerController implements Initializable {
 
 	SplitPane spl2 = new SplitPane();
 
+	//pokazvane na informaciq za selektiran sklad
 	public void showStorage() {
 		if (storageTable.getSelectionModel().getSelectedItem() != null) {
 			try {
@@ -573,6 +582,7 @@ public class OwnerController implements Initializable {
 	@FXML
 	Button contractInfoBtn;
 
+	//pokazvane na dogovorite na izbran agent
 	public void showContracts() {
 		if (agentInfoTable.getSelectionModel().getSelectedItem() != null) {
 			Session session = factory.getCurrentSession();
@@ -597,6 +607,7 @@ public class OwnerController implements Initializable {
 			System.out.println("No selection!");
 	}
 
+	//tursene na dogovor na suotveten agent za daden period
 	public void searchContracts() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -625,7 +636,8 @@ public class OwnerController implements Initializable {
 		session.getTransaction().commit();
 
 	}
-
+	
+	//pokazvane na informaciq za izbran dogovor na agent
 	public void showContractInfo() {
 		if (contractsTable.getSelectionModel().getSelectedItem() != null) {
 			try {
@@ -653,6 +665,7 @@ public class OwnerController implements Initializable {
 	@FXML
 	Tab ownedStoragesTab;
 
+	//prezarejdane na sudurjanieto na taba pri selektirane
 	public void onSelectOwnedStoragesTab() {
 		ownedStoragesTab.setOnSelectionChanged(e -> {
 			showOwnedStorages();
@@ -662,6 +675,7 @@ public class OwnerController implements Initializable {
 	@FXML
 	Tab checkAgentTab;
 
+	//prezarejdane na sudurjanieto na taba pri selektirane
 	public void onSelectOwnerAgentsTab() {
 		checkAgentTab.setOnSelectionChanged(e -> {
 			loadOwnerAgents();

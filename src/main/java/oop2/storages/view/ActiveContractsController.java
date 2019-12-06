@@ -55,6 +55,7 @@ public class ActiveContractsController implements Initializable {
 		showContracts();
 	}
 
+	// funkciq za pokazvane na aktivni dogovori
 	public void showContracts() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -65,6 +66,7 @@ public class ActiveContractsController implements Initializable {
 				.list();
 		contractList = FXCollections.observableArrayList(query);
 
+		// zadavane na informaciq za populvane na tablicata
 		storageColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("storage"));
 		startDateColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("startDate"));
 		endDateColumn.setCellValueFactory(new PropertyValueFactory<Contract, String>("endDate"));
@@ -74,6 +76,7 @@ public class ActiveContractsController implements Initializable {
 
 		activeContractsTable.setItems(contractList);
 
+		// filtur za tablicata
 		FilteredList<Contract> filteredData = new FilteredList<>(contractList, p -> true);
 		searchContract.textProperty().addListener((observable, oldValue, newValue) -> {
 			filteredData.setPredicate(contract -> {
@@ -83,6 +86,7 @@ public class ActiveContractsController implements Initializable {
 
 				String lowerCaseFilter = newValue.toLowerCase();
 
+				//zadavane koi atributi na klasa shte obhvashta filtura
 				if (contract.getStorage().getStorageAddress().toLowerCase().contains(lowerCaseFilter)) {
 					return true;
 				} else if (contract.getStartDate().toString().contains(newValue)) {

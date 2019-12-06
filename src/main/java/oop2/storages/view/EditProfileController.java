@@ -65,6 +65,7 @@ public class EditProfileController implements Initializable {
 		}
 	}
 
+	//pri natiskane na suotveten checkbox da se pozvoli pisane v dadeniq textfield
 	public void enableEdit() {
 		if (nameCheck.isSelected()) {
 			newName.setEditable(true);
@@ -85,6 +86,7 @@ public class EditProfileController implements Initializable {
 		}
 	}
 
+	//funkciq koqto update-va suotvetno izbranite poleta
 	public void editProfile() {
 		User user = Singleton.getInstance().getUser();
 		Session session = factory.getCurrentSession();

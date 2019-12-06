@@ -37,6 +37,7 @@ public class EditStorageController implements Initializable {
 
 	}
 
+	//populvane na tablicata s vsichki agenti osven naetite
 	public void showAllAgents() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -79,6 +80,7 @@ public class EditStorageController implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	//populvane na tablica s naeti agenti na sklada
 	public void showCurrentAgents() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -127,6 +129,7 @@ public class EditStorageController implements Initializable {
 	@FXML
 	TableColumn<Agent, String> allRatingColumn;
 
+	//funkciq za premahvane na agent ot naetite za sklad
 	public void removeAgent() {
 		if (currentAgentsTable.getSelectionModel().getSelectedItem() != null) {
 			Session session = factory.getCurrentSession();
@@ -144,6 +147,7 @@ public class EditStorageController implements Initializable {
 			System.out.println("No selection!");
 	}
 
+	//funkciq za naemane na agent kum sklada
 	public void addAgent() {
 		if (allAgentsTable.getSelectionModel().getSelectedItem() != null) {
 			Session session = factory.getCurrentSession();

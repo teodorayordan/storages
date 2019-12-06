@@ -31,6 +31,7 @@ public class ContractInfoController implements Initializable {
 	@FXML
 	Label fullPriceText;
 
+	//zarejdane na poletata za informaciq na dogovor
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		if (Singleton.getInstance().getContract() != null) {

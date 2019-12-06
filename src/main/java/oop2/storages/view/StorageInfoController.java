@@ -50,6 +50,7 @@ public class StorageInfoController implements Initializable {
 
 	ObservableList<Agent> agentsList;
 
+	//populvane na poletata za informaciq na sklada
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		try {

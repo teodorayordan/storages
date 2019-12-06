@@ -46,6 +46,7 @@ public class Controller implements Initializable {
 		soonExpiringContractNotification();
 	}
 
+	//proverka za iztekli dogovori i smqna na statusa na sklad i dogovor i suzdavane na suotvetni izvestiq
 	public void checkExpiredContract() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -88,6 +89,7 @@ public class Controller implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	//proverka za iztichashti dogovori v perioda dnes/utre i suzdavane na suotvetnite izvestiq
 	public void soonExpiringContractNotification() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -146,7 +148,7 @@ public class Controller implements Initializable {
 	@FXML
 	Label passwordError;
 
-	@FXML
+	//funkciq za login
 	public void login() {
 		boolean nameValid = Validation.textAlphabet(accountName, nameError, "Enter Valid Account!");
 		boolean passValid = Validation.textAlphabet(accountPassword, passwordError, "Enter Valid Password!");
@@ -156,7 +158,8 @@ public class Controller implements Initializable {
 		if (nameValid && passValid) {
 			String accName = accountName.getText();
 			String accPassword = accountPassword.getText();
-
+			
+			//proverka dali e admin i ako e se izobrazqva negoviq prozorec
 			if (accName.equals("admin") && accPassword.equals("admin")) {
 				try {
 					Parent root = FXMLLoader.load(getClass().getResource("AdminPane.fxml"));
@@ -178,6 +181,7 @@ public class Controller implements Initializable {
 					e.printStackTrace();
 				}
 			} else {
+				//proverka za sushtestvuvasht profil
 				User loggedUser = profileCheck(accName, accPassword);
 
 				if (loggedUser == null) {
@@ -193,14 +197,13 @@ public class Controller implements Initializable {
 					Owner owner = session.get(Owner.class, loggedUser.getUserID());
 					Agent agent = session.get(Agent.class, loggedUser.getUserID());
 
+					//proverka dali e owner i ako e pokazvane na suotvetniq prozorec
 					if (owner != null && owner.getUser().getStatusLogin() == false) {
 						System.out.println("Its an owner");
 						System.out.println(owner);
 						Singleton.getInstance().setOwner(owner);
-						Singleton.getInstance().getUser().setStatusLogin(true); // setvame che e lognat
-						session.merge(Singleton.getInstance().getUser()); // merge poneje ima konflikt s ednakvi obekti
-																			// v
-																			// sesiqta
+						Singleton.getInstance().getUser().setStatusLogin(true);
+						session.merge(Singleton.getInstance().getUser()); 
 						session.getTransaction().commit();
 						try {
 							Parent root = FXMLLoader.load(getClass().getResource("OwnerPane.fxml"));
@@ -229,7 +232,7 @@ public class Controller implements Initializable {
 							e.printStackTrace();
 						}
 					}
-
+					//proverka dali e agent i pokazvane na suotvetniq prozorec
 					else if (agent != null && agent.getUser().getStatusLogin() == false) {
 						System.out.println("Its an agent");
 						System.out.println(agent);
@@ -274,6 +277,7 @@ public class Controller implements Initializable {
 		}
 	}
 
+	//funkciq za proverka na profil
 	public static User profileCheck(String accName, String accPassword) {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();

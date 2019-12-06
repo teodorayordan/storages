@@ -13,12 +13,12 @@ public class ControllerTest {
 		String acc = "acc1";
 		String pass = "acc1";
 		User user = Controller.profileCheck(acc, pass);
-		assertNotNull("Test", user);
+		assertNotNull("Test Failed", user);
 		
 		String acc2 = "admin";
 		String pass2 = "admin";
 		User user2 = Controller.profileCheck(acc2, pass2);
-		assertNull("Test", user2);
+		assertNull("Test Failed2", user2);
 	}
 
 }

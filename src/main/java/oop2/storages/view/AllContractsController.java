@@ -63,6 +63,7 @@ public class AllContractsController implements Initializable {
 
 	}
 
+	// zarejdane na tablicata s vsichki dogovori na daden agent
 	public void showContracts() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -81,6 +82,7 @@ public class AllContractsController implements Initializable {
 
 		allContractsTable.setItems(contractList);
 
+		// filtur po atributi na klasa contract za izobrazqvane v tablicata
 		FilteredList<Contract> filteredData = new FilteredList<>(contractList, p -> true);
 		searchContract.textProperty().addListener((observable, oldValue, newValue) -> {
 			filteredData.setPredicate(contract -> {
@@ -122,6 +124,7 @@ public class AllContractsController implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	// pokazvane na aktivni dogovori za daden period
 	public void showDateContract() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -136,11 +139,10 @@ public class AllContractsController implements Initializable {
 			System.out.println(sDate);
 			System.out.println(eDate);
 
-			List<Contract> query = session.createQuery(
-					"from Contract s where ((s.startDate between '"+ sDate +"' and '"+ eDate +"') or"
-							+ " (s.endDate between '"+ sDate +"' and '"+ eDate +"') or "
-									+ "((s.startDate < '"+ sDate +"' and s.endDate > '"+ eDate +"'))) "
-											+ "and (s.agent = '"+ Singleton.getInstance().getAgent().getAgentID()+"')").list();
+			List<Contract> query = session.createQuery("from Contract s where ((s.startDate between '" + sDate
+					+ "' and '" + eDate + "') or" + " (s.endDate between '" + sDate + "' and '" + eDate + "') or "
+					+ "((s.startDate < '" + sDate + "' and s.endDate > '" + eDate + "'))) " + "and (s.agent = '"
+					+ Singleton.getInstance().getAgent().getAgentID() + "')").list();
 
 			dateContractList = FXCollections.observableArrayList(query);
 			System.out.println(dateContractList);

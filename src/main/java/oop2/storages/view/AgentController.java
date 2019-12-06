@@ -53,7 +53,7 @@ import validations.Validation;
 
 public class AgentController implements Initializable {
 
-	SessionFactory factory = HibernateUtility.getSessionFactory();
+	static SessionFactory factory = HibernateUtility.getSessionFactory();
 
 	ObservableList<Storage> storageList;
 
@@ -67,10 +67,10 @@ public class AgentController implements Initializable {
 		loadCreateContract();
 		showActiveContracts();
 		onSelectMaintainedStoragesTab();
-		showAllContracts();
 		showNotifications();
 	}
 
+	// zarejdnae informaciqta na profila
 	public void showProfileInfo() {
 		nameText.setText(Singleton.getInstance().getAgent().getUser().getPersonName());
 		accountNameText.setText(Singleton.getInstance().getAgent().getUser().getAccountName());
@@ -93,6 +93,7 @@ public class AgentController implements Initializable {
 	@FXML
 	TextField searchStorage;
 
+	// zarejdane na tablica sus skladove na koito e agent
 	public void showMaintainedStorages() {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
@@ -138,8 +139,10 @@ public class AgentController implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	ObservableList<Storage> availableStorages;
+	
+	// funkciq za zarejdane na poletata za suzdavane na dogovor
 	public void loadCreateContract() {
-		// TODO dobavi error label-i
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
@@ -151,7 +154,7 @@ public class AgentController implements Initializable {
 			}
 		});
 
-		List<Storage> availableStorages = new ArrayList<>();
+		availableStorages = FXCollections.observableArrayList();
 		for (Storage storage : storageList) {
 			if (storage.getStorageStatus() == false)
 				availableStorages.add(storage);
@@ -181,6 +184,7 @@ public class AgentController implements Initializable {
 		session.getTransaction().commit();
 	}
 
+	// funkciq za pokazvane na izvestiqta na profila
 	public void showNotifications() {
 		Runnable task = new Runnable() {
 			@Override
@@ -228,6 +232,7 @@ public class AgentController implements Initializable {
 	@FXML
 	Label ratingText;
 
+	// izkarvane na prozorec za redaktirane na profil
 	public void editProfile() {
 
 		try {
@@ -242,6 +247,7 @@ public class AgentController implements Initializable {
 			stage.setOnCloseRequest((WindowEvent event1) -> {
 				showProfileInfo();
 			});
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -283,6 +289,7 @@ public class AgentController implements Initializable {
 	@FXML
 	Label stSinglePriceError;
 
+	// suzdavane na dogovor
 	public void createContract() {
 		boolean storageValid = Validation.textCombo(storageCombo, chStorageError, "Select Storage!");
 		boolean renterNameValid = Validation.textAlphabetFirstCapital(renterName, renterNameError,
@@ -319,10 +326,11 @@ public class AgentController implements Initializable {
 				System.out.println(tempStorage.getStorageStatus());
 
 				changeRating(tempStorage, Singleton.getInstance().getAgent());
+				showProfileInfo();
 
 				session.merge(tempStorage);
 				session.save(contract);
-				storageList.remove(tempStorage);
+				availableStorages.remove(tempStorage);
 
 				Logger logger = Logger.getLogger(AdminController.class);
 				logger.info(Singleton.getInstance().getUser().getAccountName() + " created contract with ID: "
@@ -348,8 +356,8 @@ public class AgentController implements Initializable {
 	@FXML
 	DatePicker endDate;
 
+	// funkciq za pokazvane na svobodni skladove za period
 	public void showAvailableStorages() {
-		// TODO da se proveri dali raboti pravilno; update: da se pravqt oshte testove,
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 
@@ -420,6 +428,7 @@ public class AgentController implements Initializable {
 
 	AnchorPane anp = new AnchorPane();
 
+	// funkciq za zarejdane na informaciq na selektiran sklad
 	public void showStorage(ActionEvent event) {
 		if (storageTable.getSelectionModel().getSelectedItem() != null) {
 			try {
@@ -455,6 +464,7 @@ public class AgentController implements Initializable {
 
 	AnchorPane anpCont3 = new AnchorPane();
 
+	// funkciq za zarejdane na tablica s vsichki dogovori
 	public void showActiveContracts() {
 		try {
 			anpCont.getChildren().clear();
@@ -467,6 +477,7 @@ public class AgentController implements Initializable {
 
 	}
 
+	// funckiq za pokazvane na ifnormaciq na selektiran dogovor
 	public void showContractInfo() {
 		if (Singleton.getInstance().getContract() != null) {
 			try {
@@ -480,6 +491,7 @@ public class AgentController implements Initializable {
 		}
 	}
 
+	// funkciq za pokazvane na vsichki dogovori
 	public void showAllContracts() {
 		try {
 			anpCont3.getChildren().clear();
@@ -494,6 +506,7 @@ public class AgentController implements Initializable {
 	@FXML
 	Tab maintainedStoragesTab;
 
+	// listener za prezarejdane na informaciqta na tab pri smqna
 	public void onSelectMaintainedStoragesTab() {
 		maintainedStoragesTab.setOnSelectionChanged(e -> {
 			showMaintainedStorages();
@@ -501,7 +514,7 @@ public class AgentController implements Initializable {
 	}
 
 	// izhisleniq kolko rating da mahnem na drugite agenti
-	public double calculateRating(int agentCount) {
+	public static double calculateRating(int agentCount) {
 		if (agentCount > 5)
 			return 0.25;
 		else if (agentCount < 3)
@@ -511,29 +524,36 @@ public class AgentController implements Initializable {
 	}
 
 	// funkciq za promqna na ratinga na vsichki agenti obvurzani sus sklad
-	public void changeRating(Storage storage, Agent agent) {
+	public static void changeRating(Storage storage, Agent agent) {
 		Session session = factory.getCurrentSession();
 		double rating = calculateRating(storage.getAgentList().size());
 
 		agent.setRating(agent.getRating() + 0.5);
 		if (agent.getRating() > 5) {
 			agent.setRating(5);
-			session.merge(agent);
 		}
 
+		// proverqvame dali e null s cel da testvame s junit
+		if (agent.getAgentID() != null)
+			session.update(agent);
+
 		for (Agent otherAgents : storage.getAgentList()) {
-			if (otherAgents != agent) {
+			if (!otherAgents.equals(agent)) {
 				otherAgents.setRating(otherAgents.getRating() - rating);
 				if (otherAgents.getRating() < 0)
 					otherAgents.setRating(0);
 
-				session.merge(otherAgents);
+				// proverqvame dali e null s cel da testvame s junit
+				if (otherAgents.getAgentID() != null)
+					session.update(otherAgents);
 			}
 		}
+
+		System.out.println(agent.getRating());
 	}
 
 	public void keyPressed(KeyEvent event) {
-		
+
 		Control[] focusOrder = new Control[] { storageCombo, renterName, renterPin, dateContract, priceContract,
 				crContractBtn };
 
